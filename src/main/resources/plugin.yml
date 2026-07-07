@@ -1,0 +1,10 @@
+name: PkCinematics
+version: '${version}'
+main: com.pumpkiiiings.pkcinematics.core.PkCinematicsPlugin
+api-version: '1.21'
+commands:
+  cinematic:
+    description: Comandos del motor de cinemáticas
+    aliases: [cinematics, pkcinematics, pkc]
+    permission: pkcinematics.admin
+depend: [packetevents]

@@ -1,0 +1,53 @@
+prefix: "&8[&ePkCinematics&8] &r"
+
+# Mensajes Generales
+no_permission: "&cNo tienes permisos."
+already_exists: "&cEsa cinemática ya existe."
+not_found: "&cCinemática no encontrada."
+saved: "&aCinemática '{name}' guardada en disco."
+
+# Editor
+editor_start: "&aAhora estás editando la cinemática: &e{name}"
+editor_stop: "&aHas cerrado el editor de: &e{name}"
+editor_not_editing: "&cNo estás editando ninguna cinemática. Usa /cinematic edit <nombre>"
+editor_point_added: "&aPunto añadido (Índice: &e{index}&a, Tick: &e{tick}&a)"
+editor_invalid_index: "&cÍndice inválido."
+editor_invalid_property: "&cPropiedad no válida."
+editor_tick_updated: "&aTick actualizado a &e{value}"
+editor_fov_updated: "&aFOV actualizado a &e{value}"
+editor_interp_updated: "&aInterpolación actualizada a &e{value}"
+
+# GUI
+gui:
+  main_title: "&8Acciones - Tick: {tick}"
+  add_title: "&8Añadir Acción"
+  add_action_btn: "&aAñadir Acción"
+  action_item_name: "&eAcción: &6{type}"
+  action_item_lore:
+    - "&7Haz clic derecho para eliminar."
+  add_title_btn: "&eAñadir TITLE"
+  add_title_lore:
+    - "&7Haz clic para ingresar el título en el chat."
+
+# Chat Input
+chat_input_title: "&eEscribe el texto del Título en el chat (o 'cancelar' para abortar):"
+chat_input_cancelled: "&cOperación cancelada."
+chat_input_success: "&aAcción añadida al tick {tick}!"
+action_removed: "&aAcción eliminada."
+
+# Playback
+playback_playing: "&aReproduciendo..."
+playback_stopped: "&eReproducción detenida."
+state_restored: "&aTu estado ha sido restaurado tras un crash."
+state_restore_error: "&cError al restaurar estado de emergencia."
+
+# Ayuda
+help_header: "&6--- PkCinematics ---"
+help_create: "&e/cinematic create <nombre>"
+help_edit: "&e/cinematic edit <nombre>"
+help_point: "&e/cinematic point"
+help_point_edit: "&e/cinematic point edit <index> <propiedad> <valor>"
+help_actions: "&e/cinematic actions <tick>"
+help_save: "&e/cinematic save"
+help_play: "&e/cinematic play <nombre>"
+help_stop: "&e/cinematic stop"
