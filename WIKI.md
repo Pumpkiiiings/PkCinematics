@@ -1,124 +1,249 @@
-# 📚 Wiki de PkCinematics (Guía para Principiantes)
+# Documentación Oficial de PkCinematics
 
-¡Bienvenido a la wiki de **PkCinematics**! Aquí aprenderás cómo funciona el plugin explicado paso a paso, con peras y manzanas, para que puedas crear las mejores cinemáticas en tu servidor sin dolores de cabeza.
-
----
-
-## 🍎 1. Conceptos Básicos: Triggers vs Cinemáticas
-
-Imagina que estás preparando un espectáculo de fuegos artificiales:
-* **El Trigger (Gatillo/Detonador):** Es el botón rojo que alguien tiene que presionar para que empiece el show. En el juego, el botón rojo puede ser "cuando el jugador entra al servidor" o "cuando el jugador revive".
-* **La Cinemática (El Show):** Son los fuegos artificiales en sí. Es la línea de tiempo donde dices: *"En el segundo 1 lanza el cohete rojo, en el segundo 3 pon un sonido de explosión"*.
-
-En PkCinematics, primero creas el "Show" (la cinemática) y luego creas el "Botón" (el trigger) que lo va a encender.
+PkCinematics es un motor de cinemáticas avanzado impulsado por paquetes (PacketEvents). A continuación se detalla técnicamente la creación y configuración de **Triggers** y **Cinemáticas**, incluyendo todos los eventos y acciones disponibles.
 
 ---
 
-## 🍏 2. ¿Cómo funcionan las Cinemáticas? (El Show)
+## 1. Sistema de Triggers (`/triggers/`)
 
-Las cinemáticas viven en la carpeta `plugins/PkCinematics/cinematics/`.
+Los **Triggers** son los escuchadores de eventos (Event Listeners) que determinan **cuándo** y bajo qué **condiciones** se debe ejecutar una acción (como iniciar una cinemática o enviar un mensaje).
 
-Todo en Minecraft funciona por **Ticks** (el reloj del juego).
-👉 **20 Ticks = 1 Segundo de la vida real.**
-* 40 ticks = 2 segundos
-* 100 ticks = 5 segundos
-
-### Estructura de una Cinemática
-
-Cada archivo `.yml` tiene 3 partes importantes:
-1. `duration`: Cuánto dura en total el show (en ticks).
-2. `camera`: El recorrido que hará el jugador (puntos en el mapa).
-3. `actions`: **Las Funciones** especiales (efectos, sonidos, títulos) que ocurren en momentos exactos.
-
-### ¿Cómo meter Funciones a las Cinemáticas?
-
-Dentro de `actions`, escribes el **tick exacto** en el que quieres que pase algo, seguido de una lista de cosas.
+Un archivo de trigger tiene la siguiente estructura base:
 
 ```yaml
+id: identificador_unico
+
+trigger:
+  type: TIPO_DE_EVENTO
+
+conditions:
+  - type: TIPO_DE_CONDICION
+    # Parametros de la condicion...
+
 actions:
-  '0': # En el segundo 0 (Apenas empieza)
+  - type: TIPO_DE_ACCION
+    # Parametros de la accion...
+```
+
+### 1.1 Eventos Disponibles (`trigger.type`)
+Los eventos que el plugin puede interceptar en el servidor son:
+* `first_join`: Se ejecuta única y exclusivamente la primera vez que un jugador entra al servidor (útil para tutoriales).
+* `join`: Se ejecuta cada vez que un jugador entra al servidor.
+* `quit`: Se ejecuta cuando el jugador se desconecta.
+* `respawn`: Se ejecuta en el instante en que el jugador reaparece tras morir.
+* `death`: Se ejecuta en el momento exacto en que la vida del jugador llega a 0.
+* `world_change`: Se ejecuta cuando el jugador cambia de mundo (ej. entra a un portal del Nether/End o usa un comando de teletransporte entre mundos).
+
+### 1.2 Condiciones (`conditions`)
+Las condiciones actúan como filtros. Si una condición no se cumple, las acciones del trigger no se ejecutarán.
+* **`gamemode`**: Verifica el modo de juego del jugador.
+  ```yaml
+  - type: gamemode
+    value: SURVIVAL # Puede ser SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
+  ```
+* **`permission`**: Verifica si el jugador tiene (o no tiene) un permiso específico.
+  ```yaml
+  - type: permission
+    permission: pkcinematics.admin
+    has: false # true = debe tenerlo | false = NO debe tenerlo
+  ```
+* **`world`**: Verifica en qué mundo se encuentra el jugador actualmente.
+  ```yaml
+  - type: world
+    world: world_the_end
+  ```
+
+---
+
+## 2. Sistema de Cinemáticas (`/cinematics/`)
+
+Las **Cinemáticas** son secuencias programadas basadas en un sistema de **Ticks** (1 segundo = 20 Ticks). En ellas se define la ruta de la cámara y las acciones sincronizadas.
+
+Estructura base de una cinemática:
+
+```yaml
+duration: DURACION_TOTAL_EN_TICKS
+
+camera:
+  'TICK':
+    world: nombre_del_mundo
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    yaw: 0.0
+    pitch: 0.0
+    fov: 70.0
+    interpolation: LINEAR
+
+actions:
+  'TICK':
+    - type: TIPO_DE_ACCION
+      # Parametros...
+```
+
+### 2.1 Puntos de Cámara (`camera`)
+Define los fotogramas clave (keyframes) de la cámara. El motor interpolará (suavizará) el movimiento entre el punto `A` y el punto `B`. El `yaw` es la rotación horizontal y el `pitch` es la rotación vertical (arriba/abajo).
+
+### 2.2 Acciones por Ticks (`actions`)
+Puedes ejecutar cualquiera de las siguientes funciones especificando el tick exacto en el que deseas que ocurran.
+
+#### Mensajes y Textos (Variables soportadas: `%player_name%`)
+* **`title`**: Envía un título y subtítulo en pantalla.
+  ```yaml
+  - type: title
+    title: "&6Título Principal"
+    subtitle: "&eSubtítulo"
+    fadeIn: 20  # Ticks que tarda en aparecer
+    stay: 60    # Ticks que se mantiene en pantalla
+    fadeOut: 20 # Ticks que tarda en desaparecer
+  ```
+* **`actionbar`**: Mensaje sobre la barra de inventario.
+  ```yaml
+  - type: actionbar
+    text: "&aMensaje de Actionbar"
+  ```
+* **`message`**: Mensaje estándar en el chat.
+  ```yaml
+  - type: message
+    text: "&7Hola, %player_name%."
+  ```
+
+#### Efectos Visuales y Sonoros
+* **`sound`**: Reproduce un sonido al jugador (Nombres oficiales de Bukkit).
+  ```yaml
+  - type: sound
+    sound: ENTITY_ENDER_DRAGON_GROWL
+    volume: 1.0
+    pitch: 1.0 # 1.0 es normal, < 1.0 es más grave, > 1.0 es más agudo
+  ```
+* **`particle`**: Genera partículas en la posición de la cámara (Nombres oficiales de Bukkit).
+  ```yaml
+  - type: particle
+    particle: FLAME
+    count: 50
+    offsetX: 1.0
+    offsetY: 1.0
+    offsetZ: 1.0
+    speed: 0.1
+  ```
+* **`potion_effect`**: Aplica un efecto de poción al jugador (útil para dar `BLINDNESS` y ocultar tiempos de carga).
+  ```yaml
+  - type: potion_effect
+    effect: BLINDNESS
+    duration: 60 # Duración en ticks
+  ```
+
+#### Entorno (Paquetes Visuales)
+* **`time`**: Cambia la hora (0 = Amanecer, 6000 = Mediodía, 18000 = Medianoche). Solo afecta visualmente al jugador de la cinemática.
+  ```yaml
+  - type: time
+    time: 18000
+  ```
+* **`weather`**: Cambia el clima visual del jugador.
+  ```yaml
+  - type: weather
+    weather: DOWNFALL # Opciones: CLEAR, DOWNFALL
+  ```
+* **`reset_environment`**: **CRÍTICO**. Restaura la hora y el clima a los valores reales del servidor. *Siempre* debe colocarse en el último tick si se modificaron con las acciones anteriores.
+  ```yaml
+  - type: reset_environment
+  ```
+
+#### Utilidades
+* **`command`**: Ejecuta un comando.
+  ```yaml
+  - type: command
+    command: "give %player_name% diamond 1"
+    console: true # true = Lo ejecuta la consola, false = Lo ejecuta el jugador
+  ```
+* **`cinematic`**: Empalma y reproduce otra cinemática inmediatamente.
+  ```yaml
+  - type: cinematic
+    id: nombre_del_archivo_sin_yml
+  ```
+
+---
+
+## 3. Ejemplos Completos y Estructurados
+
+### Ejemplo 1: Trigger de Primera Vez (First Join)
+**Archivo:** `triggers/tutorial.yml`
+```yaml
+id: tutorial_inicio
+
+trigger:
+  type: first_join
+
+conditions:
+  # Solo ejecuta la cinemática si NO tiene el permiso "tutorial.saltar"
+  - type: permission
+    permission: tutorial.saltar
+    has: false
+
+actions:
+  # Llama a la cinemática
+  - type: cinematic
+    id: intro_tutorial
+  # Ejecuta un comando para darle un kit inicial
+  - type: command
+    command: "kit inicio %player_name%"
+    console: true
+```
+
+### Ejemplo 2: Cinemática Sincronizada (Intro Tutorial)
+**Archivo:** `cinematics/intro_tutorial.yml`
+```yaml
+duration: 200 # Total 10 segundos
+
+camera:
+  '0':
+    world: world
+    x: 0.0
+    y: 100.0
+    z: 0.0
+    yaw: 0.0
+    pitch: 20.0
+    fov: 70.0
+    interpolation: LINEAR
+  '200':
+    world: world
+    x: 100.0
+    y: 80.0
+    z: 100.0
+    yaw: 90.0
+    pitch: 0.0
+    fov: 70.0
+    interpolation: LINEAR
+
+actions:
+  '0': 
+    # Oscurecemos la pantalla para esconder la generación del terreno (Descargando Terreno...)
     - type: potion_effect
       effect: BLINDNESS
       duration: 60
+    # Forzamos noche para un efecto dramático
+    - type: time
+      time: 18000
+    - type: weather
+      weather: DOWNFALL
 
-  '40': # 2 Segundos después (Tick 40)
+  '40': # Tick 40 (2 Segundos después, para asegurar que el cliente ha cargado)
     - type: title
-      title: "&c¡Cuidado!"
-      subtitle: "&7Estás entrando a zona de peligro"
+      title: "&4&lBIENVENIDO"
+      subtitle: "&7Sobrevive si puedes..."
       fadeIn: 20
       stay: 60
       fadeOut: 20
-    
     - type: sound
-      sound: ENTITY_ENDER_DRAGON_GROWL
+      sound: ENTITY_LIGHTNING_BOLT_THUNDER
       volume: 1.0
-      pitch: 1.0
+      pitch: 0.8
+
+  '100':
+    - type: actionbar
+      text: "&e¡Mirando el horizonte!"
+
+  '200': 
+    # Restauramos TODO a la normalidad al terminar la cinemática
+    - type: reset_environment
 ```
-
-### 📋 Lista Completa de Funciones (Acciones) que puedes usar:
-
-* **Mensajes Visuales:**
-  * `title`: Muestra texto gigante en el centro de la pantalla. (Necesita `title`, `subtitle`, `fadeIn`, `stay`, `fadeOut`).
-  * `actionbar`: Muestra texto pequeñito arriba del inventario. (Necesita `text`).
-  * `message`: Envía un mensaje normal por el chat. (Necesita `text`). *(Puedes usar `%player_name%`)*.
-
-* **Efectos y Ambiente:**
-  * `sound`: Reproduce un ruido. (Necesita `sound` con el nombre en mayúsculas de Minecraft, `volume` y `pitch`).
-  * `particle`: Crea partículas mágicas. (Necesita `particle`, `count`, `offsetX`, `offsetY`, `offsetZ`, `speed`).
-  * `potion_effect`: Da un efecto de poción como ceguera. (Necesita `effect` y `duration`).
-
-* **Magia de Clima y Hora:**
-  * `time`: Cambia si es de día o de noche **solo para ese jugador**. (Necesita `time`, por ejemplo `18000` para noche).
-  * `weather`: Cambia si llueve o no **solo para el jugador**. (Necesita `weather: DOWNFALL` o `CLEAR`).
-  * `reset_environment`: ⚠️ **MUY IMPORTANTE**. Siempre pon esto en el último tick de tu cinemática si usaste `time` o `weather`, para devolver al jugador a la realidad de tu servidor.
-
-* **Otros:**
-  * `command`: Ejecuta un comando. (Necesita `command` y puedes poner `console: true` si quieres que lo ejecute la consola, no el jugador).
-
----
-
-## 🍐 3. ¿Cómo funcionan los Triggers? (El Botón Rojo)
-
-Los Triggers viven en la carpeta `plugins/PkCinematics/triggers/`. Sirven para decidir **cuándo** y **a quién** se le reproduce la cinemática que creamos arriba.
-
-### Tipos de "Botones" disponibles (Eventos):
-Puedes elegir cuándo se activa en la sección `type`:
-* `first_join`: La primera vez en la vida que el jugador entra al servidor.
-* `join`: Cada vez que el jugador entra al servidor.
-* `quit`: Cuando el jugador sale del servidor.
-* `respawn`: Cuando el jugador revive tras morir.
-* `death`: Justo en el momento que muere.
-* `world_change`: Cuando el jugador atraviesa un portal o se teletransporta a un mundo diferente.
-
-### Condiciones (Filtros de Seguridad)
-A veces no quieres que el botón funcione para todos. Puedes poner condiciones.
-
-```yaml
-trigger:
-  type: respawn # Cuando reviva
-
-conditions:
-  - type: world
-    world: world_the_end # SOLO si revive en el mundo del End
-  - type: gamemode
-    value: SURVIVAL # SOLO si está en modo supervivencia
-```
-
-### Acciones del Trigger
-Finalmente, le dices al Trigger qué debe hacer cuando se presione el botón. ¡Aquí es donde llamas a tu cinemática!
-
-```yaml
-actions:
-  - type: cinematic
-    id: intro_epica # Reproduce el archivo 'intro_epica.yml' de tu carpeta de cinemáticas
-  - type: message
-    text: "Disfruta de la vista."
-```
-
----
-
-## 💡 4. Consejos de Oro
-
-1. **La Pantalla de Carga:** Si usas el trigger `first_join` o `world_change`, el jugador estará en la pantalla de "Descargando Terreno". Si le pones un `title` en el tick `'0'`, no lo verá. **¡Retrasa tus títulos al tick '40' o '60'!**
-2. **Usa Ceguera:** Dar ceguera (`BLINDNESS`) en el tick `'0'` es un truco excelente para ocultar que el mundo está cargando.
-3. **No olvides el Reset:** Si usaste nieve, lluvia o hiciste de noche, recuerda llamar a la acción `reset_environment` al final de la cinemática para que no se queden atrapados en un mundo oscuro para siempre.
