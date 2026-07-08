@@ -280,3 +280,24 @@ actions:
   - type: cinematic
     id: intro_tutorial
 ```
+
+---
+
+## 4. Preguntas Frecuentes (FAQ)
+
+### ¿Puedo pausar la cámara o dejarla estática ("freeze") en una ubicación?
+**Sí**. No se utilizan triggers para esto, se hace directamente repitiendo la ubicación en la cámara.
+Si quieres crear un efecto de "pausa", simplemente repite las mismas coordenadas exactas en dos fotogramas (ticks) distintos. 
+Por ejemplo: si pones un punto en `'40'` y el siguiente en `'100'` con **las mismas posiciones** de `x, y, z, yaw, pitch`, la cámara se quedará completamente quieta durante esos 60 ticks (3 segundos) contemplando el paisaje, y luego desde el `'100'` reanudará su viaje rápido hacia tu siguiente punto. 
+¡Esto te permite combinar viajes muy rápidos con pausas dramáticas en la misma cinemática!
+
+### ¿Cómo elimino o borro un trigger/cinemática de prueba que ya no quiero?
+Es completamente manejado por archivos. 
+1. Ve a la carpeta `plugins/PkCinematics/cinematics/` o `plugins/PkCinematics/triggers/` de tu servidor.
+2. Elimina el archivo `.yml` que ya no quieras (ej. `test_intro.yml`).
+3. Entra al juego (o desde la consola) y ejecuta el comando `/pkc reload all`. ¡Y listo, borrado para siempre!
+
+### ¿Cuál es la diferencia entre las `actions` del Trigger y las `actions` de la Cinemática?
+Tienen el mismo nombre pero un propósito distinto dependiendo de dónde las pongas:
+* **En un Trigger:** Son las consecuencias instantáneas de presionar "El Botón Rojo". Por ejemplo: *"Cuando muera (trigger), reproduce la película y dale un ítem (actions)"*.
+* **En una Cinemática:** Son los efectos especiales dentro de la línea de tiempo. Ocurren en un Tick específico. Por ejemplo: *"En el tick '40' (segundo 2 de la película), haz que caiga un rayo visual (actions)"*.
