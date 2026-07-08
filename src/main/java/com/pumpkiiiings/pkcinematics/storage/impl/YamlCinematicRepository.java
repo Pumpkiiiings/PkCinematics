@@ -102,6 +102,14 @@ public class YamlCinematicRepository implements CinematicRepository {
             }
         }
         
+        // Auto-calculate duration if it was missing or too short
+        int loadedDuration = cinematic.getTimeline().getDurationTicks();
+        cinematic.getTimeline().calculateDuration();
+        int calculatedMax = cinematic.getTimeline().getDurationTicks();
+        
+        // Keep the largest (so users can still manually make it longer if they want)
+        cinematic.getTimeline().setDurationTicks(Math.max(loadedDuration, calculatedMax));
+        
         return cinematic;
     }
 
