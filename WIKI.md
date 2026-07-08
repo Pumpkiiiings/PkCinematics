@@ -33,6 +33,8 @@ Los eventos que el plugin puede interceptar en el servidor son:
 * `respawn`: Se ejecuta en el instante en que el jugador reaparece tras morir.
 * `death`: Se ejecuta en el momento exacto en que la vida del jugador llega a 0.
 * `world_change`: Se ejecuta cuando el jugador cambia de mundo (ej. entra a un portal del Nether/End o usa un comando de teletransporte entre mundos).
+* `resource_pack_loaded`: Se ejecuta cuando el jugador acepta y descarga exitosamente (`SUCCESSFULLY_LOADED`) el Resource Pack del servidor.
+* `resource_pack_declined`: Se ejecuta si el jugador rechaza o falla la descarga del Resource Pack.
 
 ### 1.2 Condiciones (`conditions`)
 Las condiciones actúan como filtros. Si una condición no se cumple, las acciones del trigger no se ejecutarán.
@@ -51,6 +53,11 @@ Las condiciones actúan como filtros. Si una condición no se cumple, las accion
   ```yaml
   - type: world
     world: world_the_end
+  ```
+* **`played_before`**: Verifica si el jugador ya se había unido al servidor en el pasado.
+  ```yaml
+  - type: played_before
+    value: false # true = ya había entrado antes | false = es su primera vez en el servidor
   ```
 
 ---
@@ -81,8 +88,13 @@ actions:
       # Parametros...
 ```
 
-### 2.1 Puntos de Cámara (`camera`)
+### 2.1 Puntos de Cámara (`camera`) y Velocidad
 Define los fotogramas clave (keyframes) de la cámara. El motor interpolará (suavizará) el movimiento entre el punto `A` y el punto `B`. El `yaw` es la rotación horizontal y el `pitch` es la rotación vertical (arriba/abajo).
+
+**¿Cómo hacer la cinemática más rápida o más lenta?**
+La velocidad de la cámara está determinada por la distancia de los Ticks entre dos puntos de cámara (`'0'` y `'100'` por ejemplo). 
+* Si quieres que vaya **rápido**, pon una diferencia de ticks pequeña (ej. de `'0'` a `'40'` para recorrer 100 bloques).
+* Si quieres que vaya **lento**, pon una diferencia de ticks grande (ej. de `'0'` a `'200'` para recorrer la misma distancia, lo que le tomará 10 segundos).
 
 ### 2.2 Acciones por Ticks (`actions`)
 Puedes ejecutar cualquiera de las siguientes funciones especificando el tick exacto en el que deseas que ocurran.
@@ -246,4 +258,25 @@ actions:
   '200': 
     # Restauramos TODO a la normalidad al terminar la cinemática
     - type: reset_environment
+```
+
+### Ejemplo 3: Cinemática esperando al Texture Pack
+Para servidores que requieren Resource Pack, es vital esperar a que cargue antes de iniciar la cinemática de bienvenida.
+
+**Archivo:** `triggers/tutorial_texture_pack.yml`
+```yaml
+id: tutorial_con_texturas
+
+trigger:
+  # Se ejecuta únicamente cuando el texture pack está SUCCESSFULLY_LOADED
+  type: resource_pack_loaded
+
+conditions:
+  # Filtramos para que SOLO suceda si es la primera vez que entran al servidor
+  - type: played_before
+    value: false
+
+actions:
+  - type: cinematic
+    id: intro_tutorial
 ```

@@ -37,6 +37,7 @@ import com.pumpkiiiings.pkcinematics.action.impl.ResetEnvironmentAction;
 import com.pumpkiiiings.pkcinematics.condition.impl.PermissionCondition;
 import com.pumpkiiiings.pkcinematics.condition.impl.WorldCondition;
 import com.pumpkiiiings.pkcinematics.condition.impl.GamemodeCondition;
+import com.pumpkiiiings.pkcinematics.condition.impl.PlayedBeforeCondition;
 import com.pumpkiiiings.pkcinematics.listener.TriggerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -109,6 +110,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.conditionRegistry.registerCondition("permission", PermissionCondition.class);
         this.conditionRegistry.registerCondition("world", WorldCondition.class);
         this.conditionRegistry.registerCondition("gamemode", GamemodeCondition.class);
+        this.conditionRegistry.registerCondition("played_before", PlayedBeforeCondition.class);
         
         // Register default trigger types
         this.triggerRegistry.registerTriggerType("first_join");
@@ -117,6 +119,8 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.triggerRegistry.registerTriggerType("respawn");
         this.triggerRegistry.registerTriggerType("death");
         this.triggerRegistry.registerTriggerType("world_change");
+        this.triggerRegistry.registerTriggerType("resource_pack_loaded");
+        this.triggerRegistry.registerTriggerType("resource_pack_declined");
         
         // Load triggers
         this.triggerManager.loadAll();
