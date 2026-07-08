@@ -59,7 +59,7 @@ processResources {
 }
 
 shadowJar {
-    // relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
+    relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
 }
 
 tasks.build {
