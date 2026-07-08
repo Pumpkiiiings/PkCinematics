@@ -32,7 +32,12 @@ public class TriggerManager {
 
     public void loadAll() {
         triggersByType.clear();
-        File[] files = triggersFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+        File[] files = triggersFolder.listFiles(new java.io.FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".yml");
+            }
+        });
         if (files == null) return;
 
         for (File file : files) {
