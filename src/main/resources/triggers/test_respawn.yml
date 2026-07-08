@@ -1,0 +1,18 @@
+id: respawn_dramatico
+
+# Este trigger se activa cuando el jugador reaparece (después de morir).
+trigger:
+  type: respawn
+
+# Solo se activa si el jugador reaparece en el mundo "world" (opcional).
+conditions:
+  - type: world
+    world: world
+
+# Ejecutamos la cinemática dramática y mandamos un mensaje al chat.
+actions:
+  - type: cinematic
+    id: test_death_drama
+  
+  - type: message
+    text: "&cEl destino te ha dado otra oportunidad, %player_name%..."

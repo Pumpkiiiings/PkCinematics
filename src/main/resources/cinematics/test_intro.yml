@@ -1,0 +1,52 @@
+duration: 200
+
+# La ruta de la cámara
+camera:
+  '0':
+    world: world
+    x: 0.5
+    y: 100.0
+    z: 0.5
+    yaw: 0.0
+    pitch: 20.0
+    fov: 70.0
+    interpolation: LINEAR
+  '200':
+    world: world
+    x: 0.5
+    y: 80.0
+    z: 0.5
+    yaw: 90.0
+    pitch: 0.0
+    fov: 70.0
+    interpolation: LINEAR
+
+# Acciones programadas por ticks
+actions:
+  '0': 
+    # Oscurecemos la pantalla al iniciar para evitar ver la carga bruta
+    - type: potion_effect
+      effect: BLINDNESS
+      duration: 60
+    
+    # IMPORTANTE: No mandes el "title" en el tick 0 durante un first_join.
+    # El cliente de Minecraft (el jugador) tarda un poco en pasar la pantalla 
+    # de "Descargando Terreno". Si envías el título en el tick 0, es probable 
+    # que el cliente lo ignore o se desvanezca antes de que termine de cargar,
+    # por eso "a veces no se muestra nada".
+    
+  '40': # Tick 40 (2 segundos después de entrar). Ya debería haber cargado el mundo.
+    - type: title
+      title: "&6&lNUEVA AVENTURA"
+      subtitle: "&eBienvenido al servidor"
+      fadeIn: 20
+      stay: 80
+      fadeOut: 20
+    
+    - type: sound
+      sound: UI_TOAST_CHALLENGE_COMPLETE
+      volume: 1.0
+      pitch: 1.0
+
+  '200': 
+    - type: reset_environment # Restaura el estado al finalizar

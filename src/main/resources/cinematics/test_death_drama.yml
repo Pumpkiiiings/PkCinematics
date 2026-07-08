@@ -1,0 +1,50 @@
+duration: 200 # 10 segundos
+
+camera:
+  '0':
+    world: world
+    x: 10.5
+    y: 120.0
+    z: 10.5
+    yaw: 45.0
+    pitch: 90.0 # Mirando directamente hacia abajo
+    fov: 90.0
+    interpolation: LINEAR
+  '200':
+    world: world
+    x: 10.5
+    y: 90.0
+    z: 10.5
+    yaw: 45.0
+    pitch: 45.0
+    fov: 70.0
+    interpolation: LINEAR
+
+actions:
+  '0': 
+    # Hacemos que sea de noche de forma visual solo para este jugador
+    - type: time
+      time: 18000 
+    
+    # Hacemos que llueva visualmente solo para este jugador
+    - type: weather
+      weather: DOWNFALL
+      
+    # Efecto de sonido de trueno para más dramatismo
+    - type: sound
+      sound: ENTITY_LIGHTNING_BOLT_THUNDER
+      volume: 1.0
+      pitch: 0.8
+      
+    - type: title
+      title: "&4&lHAS CAÍDO"
+      subtitle: "&7Pero la luz aún no se apaga..."
+      fadeIn: 20
+      stay: 100
+      fadeOut: 40
+
+  '200': 
+    # MUY IMPORTANTE: Cuando termines de manipular el clima y el tiempo de forma visual,
+    # siempre usa reset_environment al final de la cinemática para devolver al jugador
+    # a la hora y clima reales del servidor.
+    - type: reset_environment 

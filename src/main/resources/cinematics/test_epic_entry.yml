@@ -1,0 +1,71 @@
+duration: 300 # 15 segundos
+
+camera:
+  '0':
+    world: world_the_end
+    x: 100.5
+    y: 70.0
+    z: 0.5
+    yaw: 0.0
+    pitch: 0.0
+    fov: 90.0
+    interpolation: LINEAR
+  '300':
+    world: world_the_end
+    x: 0.5
+    y: 70.0
+    z: 0.5
+    yaw: 0.0
+    pitch: 20.0
+    fov: 70.0
+    interpolation: LINEAR
+
+actions:
+  '0': 
+    # Hacemos que sea de día (soleado) visualmente
+    - type: time
+      time: 6000 
+    
+    # Aseguramos que el clima esté despejado
+    - type: weather
+      weather: CLEAR
+      
+  '40': # Al igual que el first_join, damos margen para que cargue el mundo
+    - type: title
+      title: "&5&lEL FIN"
+      subtitle: "&dPrepárate para la batalla final"
+      fadeIn: 20
+      stay: 100
+      fadeOut: 20
+      
+    - type: actionbar
+      text: "&e¡Descubriendo nuevas zonas...!"
+      
+    # Reproduce un sonido de dragón
+    - type: sound
+      sound: ENTITY_ENDER_DRAGON_GROWL
+      volume: 1.0
+      pitch: 1.0
+      
+  '60':
+    # Aparece un círculo o humo (dependiendo de tu implementación de partículas)
+    - type: particle
+      particle: END_ROD
+      count: 50
+      offsetX: 2.0
+      offsetY: 2.0
+      offsetZ: 2.0
+      speed: 0.1
+
+  '100':
+    - type: particle
+      particle: PORTAL
+      count: 100
+      offsetX: 5.0
+      offsetY: 5.0
+      offsetZ: 5.0
+      speed: 1.0
+
+  '300': 
+    # Importante limpiar de nuevo
+    - type: reset_environment 

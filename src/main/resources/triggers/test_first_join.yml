@@ -1,0 +1,19 @@
+id: bienvenida_nuevos
+
+# Este es el evento que activa esta cinemática.
+# first_join se activa la primera vez que un jugador entra al servidor.
+trigger:
+  type: first_join
+
+# Sin condiciones para asegurar que siempre funcione en las pruebas.
+# conditions:
+#   - type: gamemode
+#     value: SURVIVAL
+
+# Lista de acciones a ejecutar cuando el trigger se activa
+actions:
+  - type: cinematic
+    id: test_intro # Debe coincidir con el nombre del archivo test_intro.yml (sin el .yml)
+  
+  - type: message
+    text: "&a¡Bienvenido al servidor por primera vez, %player_name%!"

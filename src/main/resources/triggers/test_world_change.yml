@@ -1,0 +1,19 @@
+id: entrada_epica_mundo
+
+# Este trigger se activa cuando el jugador cambia de mundo o entra a un portal.
+trigger:
+  type: world_change
+
+# Solo se activa si el mundo AL QUE ENTRA es "world_the_end" (como ejemplo).
+conditions:
+  - type: world
+    world: world_the_end
+
+# Acciones que se ejecutan al cambiar de mundo
+actions:
+  - type: cinematic
+    id: test_epic_entry
+  
+  - type: command
+    command: "say ¡El jugador %player_name% ha entrado a una nueva dimensión!"
+    console: true
