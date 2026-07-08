@@ -91,7 +91,9 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.editorManager = new EditorManager();
         
         // Load cinematics from disk
-        this.repository.loadAll().forEach(this.cinematicManager::registerCinematic);
+        for (com.pumpkiiiings.pkcinematics.model.Cinematic c : this.repository.loadAll()) {
+            this.cinematicManager.registerCinematic(c);
+        }
         
         // Register default actions
         this.actionRegistry.registerAction("title", TitleAction.class);
@@ -145,9 +147,9 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         PacketEvents.getAPI().terminate();
         PkCinematicsProvider.unregister();
         // Restore all players in sessions
-        this.cinematicScheduler.getActiveSessions().forEach(session -> {
+        for (com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession session : this.cinematicScheduler.getActiveSessions()) {
             this.playbackManager.stop(session.getPlayer());
-        });
+        }
     }
 
     @Override

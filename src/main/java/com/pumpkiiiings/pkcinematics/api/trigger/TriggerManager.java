@@ -124,7 +124,12 @@ public class TriggerManager {
             }
 
             PkTrigger trigger = new PkTrigger(id, type, conditions, actions);
-            triggersByType.computeIfAbsent(type.toLowerCase(), k -> new ArrayList<>()).add(trigger);
+            List<PkTrigger> list = triggersByType.get(type.toLowerCase());
+            if (list == null) {
+                list = new ArrayList<>();
+                triggersByType.put(type.toLowerCase(), list);
+            }
+            list.add(trigger);
             logger.info("Loaded trigger " + id + " of type " + type);
         }
     }

@@ -14,7 +14,12 @@ public class ActionTrack {
     }
 
     public void addAction(int tick, PkAction action) {
-        actionsByTick.computeIfAbsent(tick, k -> new ArrayList<>()).add(action);
+        List<PkAction> list = actionsByTick.get(tick);
+        if (list == null) {
+            list = new ArrayList<>();
+            actionsByTick.put(tick, list);
+        }
+        list.add(action);
     }
     
     public void removeAction(int tick, PkAction action) {

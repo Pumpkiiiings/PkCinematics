@@ -29,7 +29,12 @@ public class YamlCinematicRepository implements CinematicRepository {
     @Override
     public Collection<Cinematic> loadAll() {
         List<Cinematic> cinematics = new ArrayList<>();
-        File[] files = folder.listFiles((dir, name) -> name.endsWith(".yml"));
+        File[] files = folder.listFiles(new java.io.FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".yml");
+            }
+        });
         if (files != null) {
             for (File file : files) {
                 String id = file.getName().replace(".yml", "");
@@ -66,7 +71,7 @@ public class YamlCinematicRepository implements CinematicRepository {
                         config.getDouble(path + "z"),
                         (float) config.getDouble(path + "yaw"),
                         (float) config.getDouble(path + "pitch"),
-                        (float) config.getDouble(path + "fov", 70.0),
+                        (float) config.getDouble(path + "fov", Double.parseDouble("70.0")),
                         config.getString(path + "interpolation", "LINEAR")
                 );
                 cinematic.getTimeline().getCameraTrack().addKeyframe(kf);

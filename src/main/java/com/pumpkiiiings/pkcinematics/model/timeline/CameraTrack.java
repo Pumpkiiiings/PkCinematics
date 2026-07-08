@@ -13,7 +13,12 @@ public class CameraTrack {
 
     public void addKeyframe(CameraKeyframe keyframe) {
         this.keyframes.add(keyframe);
-        this.keyframes.sort(Comparator.comparingInt(CameraKeyframe::getTick));
+        this.keyframes.sort(new Comparator<CameraKeyframe>() {
+            @Override
+            public int compare(CameraKeyframe a, CameraKeyframe b) {
+                return Integer.compare(a.getTick(), b.getTick());
+            }
+        });
     }
     
     public void removeKeyframe(CameraKeyframe keyframe) {

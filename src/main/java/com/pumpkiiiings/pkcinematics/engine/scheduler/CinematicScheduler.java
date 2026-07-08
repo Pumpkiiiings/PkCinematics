@@ -92,7 +92,7 @@ public class CinematicScheduler extends BukkitRunnable {
             
             // 4. Debug Action Bar
             if (((com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl)PkCinematics.getApi().getPlaybackManager()).isDebugEnabled(session.getPlayer())) {
-                String actionBar = "§eCinemática: §b" + session.getCinematic().getId() + " §8| §eTick: §a" + currentTick + " §8| §eSegundo: §a" + (currentTick / 20.0) + "s";
+                String actionBar = "§eCinemática: §b" + session.getCinematic().getId() + " §8| §eTick: §a" + currentTick + " §8| §eSegundo: §a" + (currentTick / Double.parseDouble("20.0")) + "s";
                 session.getPlayer().sendActionBar(actionBar);
             }
 

@@ -138,14 +138,17 @@ public class ActionEditorGUI implements Listener {
             
             String text = event.getMessage();
             
-            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("PkCinematics"), () -> {
-                EditorSession session = PkCinematics.getApi().getEditorManager().getSession(player);
-                if (session != null) {
-                    TitleAction action = new TitleAction(text, "", 10, 60, 10);
-                    session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
-                    session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("chat_input_success", "tick", tick));
-                    openMainMenu(player, session, tick);
+            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("PkCinematics"), new Runnable() {
+                @Override
+                public void run() {
+                    EditorSession session = PkCinematics.getApi().getEditorManager().getSession(player);
+                    if (session != null) {
+                        TitleAction action = new TitleAction(text, "", 10, 60, 10);
+                        session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
+                        session.getCinematic().getTimeline().calculateDuration();
+                        player.sendMessage(msg.getMessage("prefix") + msg.getMessage("chat_input_success", "tick", tick));
+                        openMainMenu(player, session, tick);
+                    }
                 }
             });
         }

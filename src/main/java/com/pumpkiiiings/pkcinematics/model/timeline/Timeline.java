@@ -23,14 +23,14 @@ public class Timeline {
     }
     
     public void calculateDuration() {
-        int maxCameraTick = cameraTrack.getKeyframes().stream()
-                .mapToInt(CameraKeyframe::getTick)
-                .max()
-                .orElse(0);
-        int maxActionTick = actionTrack.getAllActions().keySet().stream()
-                .mapToInt(Integer::intValue)
-                .max()
-                .orElse(0);
+        int maxCameraTick = 0;
+        for (CameraKeyframe kf : cameraTrack.getKeyframes()) {
+            if (kf.getTick() > maxCameraTick) maxCameraTick = kf.getTick();
+        }
+        int maxActionTick = 0;
+        for (Integer t : actionTrack.getAllActions().keySet()) {
+            if (t > maxActionTick) maxActionTick = t;
+        }
         this.durationTicks = Math.max(maxCameraTick, maxActionTick);
     }
 

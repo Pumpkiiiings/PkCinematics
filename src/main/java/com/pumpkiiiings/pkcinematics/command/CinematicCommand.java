@@ -109,7 +109,12 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 
                 if (prop.equals("time") || prop.equals("tick")) {
                     kf.setTick(Integer.parseInt(val));
-                    track.getKeyframes().sort((a,b) -> Integer.compare(a.getTick(), b.getTick()));
+                    track.getKeyframes().sort(new java.util.Comparator<CameraKeyframe>() {
+                        @Override
+                        public int compare(CameraKeyframe a, CameraKeyframe b) {
+                            return Integer.compare(a.getTick(), b.getTick());
+                        }
+                    });
                     session.getCinematic().getTimeline().calculateDuration();
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_tick_updated", "value", val));
                 } else if (prop.equals("fov")) {
@@ -143,14 +148,14 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
             
             // Minecraft ArmorStand Eye Height is approximately 1.62.
             // If we want the camera exactly at the player's eyes, we must spawn the entity 1.62 blocks below.
-            double cameraY = loc.getY() - 1.62;
+            double cameraY = loc.getY() - Double.parseDouble("1.62");
             
             CameraKeyframe kf = new CameraKeyframe(
                 newTick, 
                 loc.getWorld().getName(),
                 loc.getX(), cameraY, loc.getZ(),
                 loc.getYaw(), loc.getPitch(),
-                70.0f, // Default FOV
+                Float.parseFloat("70.0"), // Default FOV
                 "LINEAR" // Default interpolation
             );
             
@@ -226,7 +231,9 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
                     PkCinematics.getApi().getCinematicManager().unregisterCinematic(cin.getId());
                 }
-                repository.loadAll().forEach(PkCinematics.getApi().getCinematicManager()::registerCinematic);
+                for (Cinematic c : repository.loadAll()) {
+                    PkCinematics.getApi().getCinematicManager().registerCinematic(c);
+                }
                 player.sendMessage(msg.getMessage("prefix") + "§aCinemáticas recargadas exitosamente.");
             }
             if (target.equals("triggers") || target.equals("all")) {
@@ -259,32 +266,39 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
         if (!sender.hasPermission("pkcinematics.admin")) return java.util.Collections.emptyList();
         
         if (args.length == 1) {
-            return java.util.stream.Stream.of("create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug")
-                    .filter(s -> s.startsWith(args[0].toLowerCase()))
-                    .collect(java.util.stream.Collectors.toList());
+            List<String> results = new java.util.ArrayList<>();
+            for (String s : new String[]{"create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug"}) {
+                if (s.startsWith(args[0].toLowerCase())) results.add(s);
+            }
+            return results;
         }
         
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("reload")) {
-                return java.util.stream.Stream.of("cinematics", "triggers", "messages", "all")
-                        .filter(s -> s.startsWith(args[1].toLowerCase()))
-                        .collect(java.util.stream.Collectors.toList());
+                List<String> results = new java.util.ArrayList<>();
+                for (String s : new String[]{"cinematics", "triggers", "messages", "all"}) {
+                    if (s.startsWith(args[1].toLowerCase())) results.add(s);
+                }
+                return results;
             } else if (args[0].equalsIgnoreCase("play") || args[0].equalsIgnoreCase("edit")) {
-                return PkCinematics.getApi().getCinematicManager().getAllCinematics().stream()
-                        .map(Cinematic::getId)
-                        .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase()))
-                        .collect(java.util.stream.Collectors.toList());
+                List<String> results = new java.util.ArrayList<>();
+                for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
+                    if (cin.getId().toLowerCase().startsWith(args[1].toLowerCase())) results.add(cin.getId());
+                }
+                return results;
             } else if (args[0].equalsIgnoreCase("point")) {
-                return java.util.stream.Stream.of("edit")
-                        .filter(s -> s.startsWith(args[1].toLowerCase()))
-                        .collect(java.util.stream.Collectors.toList());
+                List<String> results = new java.util.ArrayList<>();
+                if ("edit".startsWith(args[1].toLowerCase())) results.add("edit");
+                return results;
             }
         }
         
         if (args.length == 4 && args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
-            return java.util.stream.Stream.of("time", "tick", "fov", "interp")
-                    .filter(s -> s.startsWith(args[3].toLowerCase()))
-                    .collect(java.util.stream.Collectors.toList());
+            List<String> results = new java.util.ArrayList<>();
+            for (String s : new String[]{"time", "tick", "fov", "interp"}) {
+                if (s.startsWith(args[3].toLowerCase())) results.add(s);
+            }
+            return results;
         }
         
         return java.util.Collections.emptyList();
