@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'io.papermc.paperweight.userdev' version '1.7.1'
-    id 'com.gradleup.shadow' version '8.3.5'
+    id 'io.github.goooler.shadow' version '8.1.8'
 }
 
 group = 'com.pumpkiiiings.pkcinematics'
@@ -38,14 +38,15 @@ java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release.set(targetJavaVersion)
+    options.compilerArgs << '-XDstringConcat=inline'
 }
 
 processResources {
@@ -58,7 +59,7 @@ processResources {
 }
 
 shadowJar {
-    relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
+    // relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
 }
 
 tasks.build {
