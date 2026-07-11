@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.pumpkiiiings.pkcinematics'
-version = '1.2'
+version = '1.2-FIX'
 
 repositories {
     mavenCentral()

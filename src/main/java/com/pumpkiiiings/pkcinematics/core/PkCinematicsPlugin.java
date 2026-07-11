@@ -138,6 +138,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         // Register events
         getServer().getPluginManager().registerEvents(new ActionEditorGUI(), this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
+        getServer().getPluginManager().registerEvents(new com.pumpkiiiings.pkcinematics.listener.PlayerSkipCinematicListener(), this);
         
         getLogger().info("PkCinematics (v2 Timeline Architecture) enabled!");
     }

@@ -58,6 +58,9 @@ public class YamlCinematicRepository implements CinematicRepository {
         // Load duration
         cinematic.getTimeline().setDurationTicks(config.getInt("duration", 0));
         
+        // Load skipeable
+        cinematic.setSkipeable(config.getBoolean("skipeable-cinematic", false));
+        
         // Load Camera Track
         if (config.contains("camera")) {
             for (String key : config.getConfigurationSection("camera").getKeys(false)) {
@@ -125,6 +128,7 @@ public class YamlCinematicRepository implements CinematicRepository {
         
         cinematic.getTimeline().calculateDuration();
         config.set("duration", cinematic.getTimeline().getDurationTicks());
+        config.set("skipeable-cinematic", cinematic.isSkipeable());
         
         // Save Camera Track
         for (CameraKeyframe kf : cinematic.getTimeline().getCameraTrack().getKeyframes()) {

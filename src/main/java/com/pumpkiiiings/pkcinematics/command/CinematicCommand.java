@@ -209,8 +209,26 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("not_found"));
                 return true;
             }
-            PkCinematics.getApi().getPlaybackManager().play(player, cin);
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_playing"));
+
+            if (args.length >= 3) {
+                String targetName = args[2];
+                if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
+                    List<Player> onlinePlayers = new java.util.ArrayList<>(org.bukkit.Bukkit.getOnlinePlayers());
+                    PkCinematics.getApi().getPlaybackManager().play(onlinePlayers, cin);
+                    player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para todos los jugadores.");
+                } else {
+                    Player target = org.bukkit.Bukkit.getPlayer(targetName);
+                    if (target == null) {
+                        player.sendMessage(msg.getMessage("prefix") + "§cJugador no encontrado: " + targetName);
+                        return true;
+                    }
+                    PkCinematics.getApi().getPlaybackManager().play(target, cin);
+                    player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para " + target.getName() + ".");
+                }
+            } else {
+                PkCinematics.getApi().getPlaybackManager().play(player, cin);
+                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_playing"));
+            }
             return true;
         }
 
@@ -289,6 +307,18 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
             } else if (args[0].equalsIgnoreCase("point")) {
                 List<String> results = new java.util.ArrayList<>();
                 if ("edit".startsWith(args[1].toLowerCase())) results.add("edit");
+                return results;
+            }
+        }
+        
+        if (args.length == 3) {
+            if (args[0].equalsIgnoreCase("play")) {
+                List<String> results = new java.util.ArrayList<>();
+                if ("todos".startsWith(args[2].toLowerCase())) results.add("todos");
+                if ("all".startsWith(args[2].toLowerCase())) results.add("all");
+                for (Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+                    if (p.getName().toLowerCase().startsWith(args[2].toLowerCase())) results.add(p.getName());
+                }
                 return results;
             }
         }

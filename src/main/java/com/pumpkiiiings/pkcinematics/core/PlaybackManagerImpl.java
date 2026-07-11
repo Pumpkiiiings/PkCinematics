@@ -8,8 +8,6 @@ import com.pumpkiiiings.pkcinematics.engine.session.PlayerState;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +25,10 @@ public class PlaybackManagerImpl implements PlaybackManager {
     public PlaybackManagerImpl(CinematicScheduler scheduler, PlayerStateRestorer stateRestorer) {
         this.scheduler = scheduler;
         this.stateRestorer = stateRestorer;
+    }
+
+    public CinematicScheduler getScheduler() {
+        return scheduler;
     }
 
     @Override
@@ -49,7 +51,12 @@ public class PlaybackManagerImpl implements PlaybackManager {
             player.getVehicle().removePassenger(player);
         }
         player.setGameMode(GameMode.SPECTATOR);
-        // Optional: add blindness or invisibility if needed.
+
+        // 3b. Register in the cinematic sets — CameraPacketListener will block
+        //     SPAWN_ENTITY packets for this player from reaching other cinematic players,
+        //     preventing spectator bodies from being visible. No loops needed here.
+        scheduler.getCinematicPlayerIds().add(player.getUniqueId());
+        scheduler.getCinematicEntityIds().add(player.getEntityId());
         
         // 4. Add to scheduler (which starts the camera)
         scheduler.addSession(session);
@@ -70,7 +77,11 @@ public class PlaybackManagerImpl implements PlaybackManager {
     public void stop(Player player) {
         PlaybackSession session = getSession(player);
         if (session != null) {
-            // Remove from scheduler
+            // Remove from cinematic sets first so packet filter stops blocking
+            scheduler.getCinematicPlayerIds().remove(player.getUniqueId());
+            scheduler.getCinematicEntityIds().remove(player.getEntityId());
+
+            // Remove from scheduler (also stops camera)
             scheduler.removeSession(session.getSessionId());
             
             // Restore State
@@ -78,6 +89,24 @@ public class PlaybackManagerImpl implements PlaybackManager {
             
             // Delete Backup
             stateRestorer.deleteBackup(session.getSessionId());
+        }
+    }
+
+    /**
+     * Called when a player disconnects mid-cinematic.
+     * Skips state restoration (player is offline) but cleans up all maps to prevent memory leaks.
+     */
+    public void forceCleanup(UUID playerUuid) {
+        scheduler.getCinematicPlayerIds().remove(playerUuid);
+        debugPlayers.remove(playerUuid);
+        // Find and remove the session from the scheduler directly
+        for (PlaybackSession session : scheduler.getActiveSessions()) {
+            if (session.getPlayer().getUniqueId().equals(playerUuid)) {
+                scheduler.getCinematicEntityIds().remove(session.getPlayer().getEntityId());
+                scheduler.removeSession(session.getSessionId());
+                stateRestorer.deleteBackup(session.getSessionId());
+                break;
+            }
         }
     }
 

@@ -17,9 +17,28 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CinematicScheduler extends BukkitRunnable {
     private final ConcurrentHashMap<UUID, PlaybackSession> activeSessions = new ConcurrentHashMap<>();
     private final CameraController cameraController;
+    /**
+     * Shared set of UUIDs of all players currently in a cinematic.
+     * Read by CameraPacketListener on every outgoing SPAWN_ENTITY packet — must be thread-safe.
+     */
+    private final java.util.Set<UUID> cinematicPlayerIds = ConcurrentHashMap.newKeySet();
+    /**
+     * Shared set of entity IDs (int) of players currently in a cinematic.
+     * Used by CameraPacketListener to cancel SPAWN_ENTITY packets via getEntityId(),
+     * which is always available unlike getEntityUUID() in some PacketEvents builds.
+     */
+    private final java.util.Set<Integer> cinematicEntityIds = ConcurrentHashMap.newKeySet();
 
     public CinematicScheduler(CameraController cameraController) {
         this.cameraController = cameraController;
+    }
+
+    public java.util.Set<UUID> getCinematicPlayerIds() {
+        return cinematicPlayerIds;
+    }
+
+    public java.util.Set<Integer> getCinematicEntityIds() {
+        return cinematicEntityIds;
     }
 
     public void addSession(PlaybackSession session) {

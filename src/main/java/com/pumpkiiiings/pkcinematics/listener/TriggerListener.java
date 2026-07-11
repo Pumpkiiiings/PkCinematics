@@ -14,10 +14,13 @@ public class TriggerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!event.getPlayer().hasPlayedBefore()) {
-            PkCinematics.getApi().getTriggerManager().fire("first_join", event.getPlayer());
-        }
-        PkCinematics.getApi().getTriggerManager().fire("join", event.getPlayer());
+        org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(TriggerListener.class);
+        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!event.getPlayer().hasPlayedBefore()) {
+                PkCinematics.getApi().getTriggerManager().fire("first_join", event.getPlayer());
+            }
+            PkCinematics.getApi().getTriggerManager().fire("join", event.getPlayer());
+        }, 15L); // 15 ticks = 0.75 seconds delay
     }
 
     @EventHandler

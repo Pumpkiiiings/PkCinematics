@@ -5,10 +5,12 @@ import com.pumpkiiiings.pkcinematics.model.timeline.Timeline;
 public class Cinematic {
     private final String id;
     private final Timeline timeline;
+    private boolean skipeable;
 
     public Cinematic(String id) {
         this.id = id;
         this.timeline = new Timeline();
+        this.skipeable = false;
     }
 
     public String getId() {
@@ -17,5 +19,13 @@ public class Cinematic {
 
     public Timeline getTimeline() {
         return timeline;
+    }
+
+    public boolean isSkipeable() {
+        return skipeable;
+    }
+
+    public void setSkipeable(boolean skipeable) {
+        this.skipeable = skipeable;
     }
 }
