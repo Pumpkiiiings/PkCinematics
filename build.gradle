@@ -29,7 +29,7 @@ dependencies {
     // Paper 1.21.1
     paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
 
-    // PacketEvents
+    // PacketEvents — shaded in the release jar, provided by the server in dev builds
     implementation 'com.github.retrooper:packetevents-spigot:2.5.0'
 }
 
@@ -58,8 +58,30 @@ processResources {
     }
 }
 
+// ── Release JAR: shades + relocates PacketEvents ────────────────────────────
 shadowJar {
     relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
+    relocate 'io.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.ioretrograder'
+    archiveClassifier.set('')
+}
+
+// ── Dev JAR: no PacketEvents inside — assumes it’s a plugin on the server ────
+tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    group = 'build'
+    description = 'Builds a -dev JAR without shading PacketEvents (server must have it as a plugin).'
+
+    from sourceSets.main.output
+    configurations = [project.configurations.runtimeClasspath]
+
+    // Exclude PacketEvents entirely — provided by the server
+    exclude 'com/github/retrooper/**'
+    exclude 'io/github/retrooper/**'
+    exclude 'net/kyori/**'
+
+    archiveBaseName.set(project.name)
+    archiveVersion.set("${project.version}-dev")
+    archiveClassifier.set('')
+    destinationDirectory.set(layout.buildDirectory.dir('libs'))
 }
 
 tasks.build {
