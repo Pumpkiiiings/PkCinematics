@@ -59,11 +59,14 @@ public class PlaybackManagerImpl implements PlaybackManager {
         scheduler.getCinematicEntityIds().add(player.getEntityId());
         
         // 3c. Hide all other players from the cinematic player (keeps them in Tab)
-        org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(PlaybackManagerImpl.class);
-        for (Player other : org.bukkit.Bukkit.getOnlinePlayers()) {
-            if (!other.equals(player)) {
-                player.hideEntity(plugin, other);
-            }
+        int[] entityIds = org.bukkit.Bukkit.getOnlinePlayers().stream()
+                .filter(p -> !p.equals(player))
+                .mapToInt(Player::getEntityId)
+                .toArray();
+        if (entityIds.length > 0) {
+            com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities destroyPacket = 
+                    new com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities(entityIds);
+            com.github.retrooper.packetevents.PacketEvents.getAPI().getPlayerManager().sendPacket(player, destroyPacket);
         }
 
         
@@ -97,12 +100,9 @@ public class PlaybackManagerImpl implements PlaybackManager {
             stateRestorer.restoreState(player, session.getSavedState());
             
             // Restore visibility of other players
-            org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(PlaybackManagerImpl.class);
-            for (Player other : org.bukkit.Bukkit.getOnlinePlayers()) {
-                if (!other.equals(player)) {
-                    player.showEntity(plugin, other);
-                }
-            }
+            // Note: Since we use PacketEvents to hide them purely client-side, 
+            // Bukkit still thinks they are tracked. They will naturally reappear 
+            // when the player is teleported back by the stateRestorer (chunk refresh).
             
             // Delete Backup
             stateRestorer.deleteBackup(session.getSessionId());
