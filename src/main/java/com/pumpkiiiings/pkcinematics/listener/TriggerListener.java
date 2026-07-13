@@ -15,6 +15,16 @@ public class TriggerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(TriggerListener.class);
+        
+        // Hide this new player from anyone currently watching a cinematic
+        for (com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession session : 
+                ((com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl) PkCinematics.getApi().getPlaybackManager()).getScheduler().getActiveSessions()) {
+            org.bukkit.entity.Player cinematicPlayer = session.getPlayer();
+            if (cinematicPlayer != null && cinematicPlayer.isOnline()) {
+                cinematicPlayer.hideEntity(plugin, event.getPlayer());
+            }
+        }
+        
         org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!event.getPlayer().hasPlayedBefore()) {
                 PkCinematics.getApi().getTriggerManager().fire("first_join", event.getPlayer());

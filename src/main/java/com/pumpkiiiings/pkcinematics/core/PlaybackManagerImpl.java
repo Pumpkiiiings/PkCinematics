@@ -58,6 +58,15 @@ public class PlaybackManagerImpl implements PlaybackManager {
         scheduler.getCinematicPlayerIds().add(player.getUniqueId());
         scheduler.getCinematicEntityIds().add(player.getEntityId());
         
+        // 3c. Hide all other players from the cinematic player (keeps them in Tab)
+        org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(PlaybackManagerImpl.class);
+        for (Player other : org.bukkit.Bukkit.getOnlinePlayers()) {
+            if (!other.equals(player)) {
+                player.hideEntity(plugin, other);
+            }
+        }
+
+        
         // 4. Add to scheduler (which starts the camera)
         scheduler.addSession(session);
         
@@ -86,6 +95,14 @@ public class PlaybackManagerImpl implements PlaybackManager {
             
             // Restore State
             stateRestorer.restoreState(player, session.getSavedState());
+            
+            // Restore visibility of other players
+            org.bukkit.plugin.Plugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(PlaybackManagerImpl.class);
+            for (Player other : org.bukkit.Bukkit.getOnlinePlayers()) {
+                if (!other.equals(player)) {
+                    player.showEntity(plugin, other);
+                }
+            }
             
             // Delete Backup
             stateRestorer.deleteBackup(session.getSessionId());

@@ -8,9 +8,13 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDe
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityHeadLook;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.pumpkiiiings.pkcinematics.api.camera.CameraController;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import org.bukkit.entity.Player;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +43,13 @@ public class PacketCameraController implements CameraController {
                 0, 0, Optional.empty()
         );
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, spawnPacket);
+
+        // Make the ArmorStand invisible so it doesn't show up in F5
+        WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(
+                fakeEntityId,
+                Collections.singletonList(new EntityData(0, EntityDataTypes.BYTE, (byte) 0x20))
+        );
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, metadataPacket);
 
         // Set Camera to spectate fake entity
         WrapperPlayServerCamera cameraPacket = new WrapperPlayServerCamera(fakeEntityId);
