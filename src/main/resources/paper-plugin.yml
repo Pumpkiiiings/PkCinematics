@@ -1,0 +1,11 @@
+name: PkCinematics
+version: '${version}'
+main: com.pumpkiiiings.pkcinematics.core.PkCinematicsPlugin
+description: Comandos del motor de cinemáticas
+api-version: '1.21'
+folia-supported: true
+dependencies:
+  server:
+    packetevents:
+      load: BEFORE
+      required: true

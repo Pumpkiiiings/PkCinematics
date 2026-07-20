@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.io.FilenameFilter;
 
 public class TriggerManager {
 
@@ -32,7 +33,7 @@ public class TriggerManager {
 
     public void loadAll() {
         triggersByType.clear();
-        File[] files = triggersFolder.listFiles(new java.io.FilenameFilter() {
+        File[] files = triggersFolder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".yml");

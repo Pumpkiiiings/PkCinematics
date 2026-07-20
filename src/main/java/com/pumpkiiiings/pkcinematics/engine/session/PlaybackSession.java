@@ -3,6 +3,7 @@ package com.pumpkiiiings.pkcinematics.engine.session;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import org.bukkit.entity.Player;
 import java.util.UUID;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 public class PlaybackSession {
     private final UUID sessionId;
@@ -11,6 +12,7 @@ public class PlaybackSession {
     private PlayerState savedState;
     private int currentTick;
     private boolean paused;
+    private ScheduledTask scheduledTask;
 
     public PlaybackSession(Player player, Cinematic cinematic) {
         this.sessionId = UUID.randomUUID();
@@ -18,6 +20,14 @@ public class PlaybackSession {
         this.cinematic = cinematic;
         this.currentTick = 0;
         this.paused = false;
+    }
+
+    public ScheduledTask getScheduledTask() {
+        return scheduledTask;
+    }
+
+    public void setScheduledTask(ScheduledTask scheduledTask) {
+        this.scheduledTask = scheduledTask;
     }
 
     public UUID getSessionId() {

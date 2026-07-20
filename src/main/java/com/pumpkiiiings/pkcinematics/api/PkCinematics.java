@@ -4,6 +4,8 @@ import com.pumpkiiiings.pkcinematics.api.action.ActionRegistry;
 import com.pumpkiiiings.pkcinematics.api.condition.ConditionRegistry;
 import com.pumpkiiiings.pkcinematics.api.trigger.TriggerManager;
 import com.pumpkiiiings.pkcinematics.api.trigger.TriggerRegistry;
+import com.pumpkiiiings.pkcinematics.config.MessageManager;
+import com.pumpkiiiings.pkcinematics.editor.EditorManager;
 
 public interface PkCinematics {
     
@@ -46,12 +48,12 @@ public interface PkCinematics {
     /**
      * Get the EditorManager instance.
      */
-    com.pumpkiiiings.pkcinematics.editor.EditorManager getEditorManager();
+    EditorManager getEditorManager();
     
     /**
      * Get the MessageManager instance.
      */
-    com.pumpkiiiings.pkcinematics.config.MessageManager getMessageManager();
+    MessageManager getMessageManager();
 
     /**
      * Gets the static API instance.

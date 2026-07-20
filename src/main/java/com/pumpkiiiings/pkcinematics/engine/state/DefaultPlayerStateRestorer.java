@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.pumpkiiiings.pkcinematics.config.MessageManager;
 
 public class DefaultPlayerStateRestorer implements PlayerStateRestorer {
 
@@ -175,11 +176,11 @@ public class DefaultPlayerStateRestorer implements PlayerStateRestorer {
             // Delete file since it was restored
             file.delete();
             
-            com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+            MessageManager msg = PkCinematics.getApi().getMessageManager();
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("state_restored"));
         } catch (Exception e) {
             e.printStackTrace();
-            com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+            MessageManager msg = PkCinematics.getApi().getMessageManager();
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("state_restore_error"));
         }
     }

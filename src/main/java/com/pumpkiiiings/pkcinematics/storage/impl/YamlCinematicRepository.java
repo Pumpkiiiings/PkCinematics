@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import com.pumpkiiiings.pkcinematics.api.PkCinematics;
 import com.pumpkiiiings.pkcinematics.api.action.PkAction;
+import java.io.FilenameFilter;
 
 public class YamlCinematicRepository implements CinematicRepository {
     
@@ -29,7 +30,7 @@ public class YamlCinematicRepository implements CinematicRepository {
     @Override
     public Collection<Cinematic> loadAll() {
         List<Cinematic> cinematics = new ArrayList<>();
-        File[] files = folder.listFiles(new java.io.FilenameFilter() {
+        File[] files = folder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".yml");
@@ -75,7 +76,8 @@ public class YamlCinematicRepository implements CinematicRepository {
                         (float) config.getDouble(path + "yaw"),
                         (float) config.getDouble(path + "pitch"),
                         (float) config.getDouble(path + "fov", Double.parseDouble("70.0")),
-                        config.getString(path + "interpolation", "LINEAR")
+                        config.getString(path + "interpolation", "LINEAR"),
+                        config.getString(path + "easing", "LINEAR")
                 );
                 cinematic.getTimeline().getCameraTrack().addKeyframe(kf);
             }
@@ -141,6 +143,7 @@ public class YamlCinematicRepository implements CinematicRepository {
             config.set(path + "pitch", kf.getPitch());
             config.set(path + "fov", kf.getFov());
             config.set(path + "interpolation", kf.getInterpolationType());
+            config.set(path + "easing", kf.getEasingType());
         }
         
         // Save Actions

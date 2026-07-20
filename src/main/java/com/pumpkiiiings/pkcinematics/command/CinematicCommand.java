@@ -6,34 +6,43 @@ import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraTrack;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.Location;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import java.util.Collection;
 import java.util.List;
+import com.pumpkiiiings.pkcinematics.api.storage.CinematicRepository;
+import com.pumpkiiiings.pkcinematics.config.MessageManager;
+import com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl;
+import com.pumpkiiiings.pkcinematics.editor.gui.ActionEditorGUI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import org.bukkit.Bukkit;
 
-public class CinematicCommand implements CommandExecutor, TabCompleter {
+public class CinematicCommand implements BasicCommand {
 
     private final EditorManager editorManager;
-    private final com.pumpkiiiings.pkcinematics.api.storage.CinematicRepository repository;
+    private final CinematicRepository repository;
 
-    public CinematicCommand(EditorManager editorManager, com.pumpkiiiings.pkcinematics.api.storage.CinematicRepository repository) {
+    public CinematicCommand(EditorManager editorManager, CinematicRepository repository) {
         this.editorManager = editorManager;
         this.repository = repository;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
         
-        com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
 
         if (!player.hasPermission("pkcinematics.admin")) {
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("no_permission"));
-            return true;
+            return;
         }
 
         if (args.length == 0) {
@@ -47,7 +56,7 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(msg.getMessage("help_play"));
             player.sendMessage(msg.getMessage("help_stop"));
             player.sendMessage("§e/cinematic reload (cinematics|triggers|messages|all) §7- Recarga configuraciones");
-            return true;
+            return;
         }
 
         String sub = args[0].toLowerCase();
@@ -55,32 +64,32 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
         if (sub.equals("create")) {
             if (args.length < 2) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_create"));
-                return true;
+                return;
             }
             String id = args[1];
             if (PkCinematics.getApi().getCinematicManager().getCinematic(id) != null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("already_exists"));
-                return true;
+                return;
             }
             Cinematic cin = new Cinematic(id);
             PkCinematics.getApi().getCinematicManager().registerCinematic(cin);
             editorManager.startEditing(player, cin);
-            return true;
+            return;
         }
 
         if (sub.equals("edit")) {
             if (args.length < 2) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_edit"));
-                return true;
+                return;
             }
             String id = args[1];
             Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
             if (cin == null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("not_found"));
-                return true;
+                return;
             }
             editorManager.startEditing(player, cin);
-            return true;
+            return;
         }
 
         if (sub.equals("point")) {
@@ -88,11 +97,11 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 EditorSession session = editorManager.getSession(player);
                 if (session == null) {
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
-                    return true;
+                    return;
                 }
                 if (args.length < 5) {
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_point_edit"));
-                    return true;
+                    return;
                 }
                 int index;
                 try { index = Integer.parseInt(args[2]); } catch(Exception e) { return true; }
@@ -100,7 +109,7 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
                 if (index < 0 || index >= track.getKeyframes().size()) {
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_index"));
-                    return true;
+                    return;
                 }
                 
                 CameraKeyframe kf = track.getKeyframes().get(index);
@@ -109,7 +118,7 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 
                 if (prop.equals("time") || prop.equals("tick")) {
                     kf.setTick(Integer.parseInt(val));
-                    track.getKeyframes().sort(new java.util.Comparator<CameraKeyframe>() {
+                    track.getKeyframes().sort(new Comparator<CameraKeyframe>() {
                         @Override
                         public int compare(CameraKeyframe a, CameraKeyframe b) {
                             return Integer.compare(a.getTick(), b.getTick());
@@ -123,16 +132,19 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 } else if (prop.equals("interp")) {
                     kf.setInterpolationType(val.toUpperCase());
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_interp_updated", "value", val));
+                } else if (prop.equals("easing")) {
+                    kf.setEasingType(val.toUpperCase());
+                    player.sendMessage(msg.getMessage("prefix") + "§aEasing actualizado a: " + val);
                 } else {
                     player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_property"));
                 }
-                return true;
+                return;
             }
 
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
-                return true;
+                return;
             }
             
             CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
@@ -156,7 +168,8 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 loc.getX(), cameraY, loc.getZ(),
                 loc.getYaw(), loc.getPitch(),
                 Float.parseFloat("70.0"), // Default FOV
-                "LINEAR" // Default interpolation
+                "LINEAR", // Default interpolation
+                "LINEAR" // Default easing
             );
             
             track.addKeyframe(kf);
@@ -164,63 +177,63 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
             
             int index = track.getKeyframes().indexOf(kf);
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_point_added", "index", index, "tick", newTick));
-            return true;
+            return;
         }
         
         if (sub.equals("save")) {
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
-                return true;
+                return;
             }
             repository.save(session.getCinematic());
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("saved", "name", session.getCinematic().getId()));
             editorManager.stopEditing(player);
-            return true;
+            return;
         }
         
         if (sub.equals("actions")) {
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
-                return true;
+                return;
             }
             if (args.length < 2) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_actions"));
-                return true;
+                return;
             }
             try {
                 int tick = Integer.parseInt(args[1]);
-                com.pumpkiiiings.pkcinematics.editor.gui.ActionEditorGUI.openMainMenu(player, session, tick);
+                ActionEditorGUI.openMainMenu(player, session, tick);
             } catch (Exception e) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_index"));
             }
-            return true;
+            return;
         }
         
         if (sub.equals("play")) {
             if (args.length < 2) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_play"));
-                return true;
+                return;
             }
             String id = args[1];
             Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
             if (cin == null) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("not_found"));
-                return true;
+                return;
             }
 
             if (args.length >= 3) {
                 String targetName = args[2];
                 if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
-                    List<Player> onlinePlayers = new java.util.ArrayList<>(org.bukkit.Bukkit.getOnlinePlayers());
+                    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
                     PkCinematics.getApi().getPlaybackManager().play(onlinePlayers, cin);
                     player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para todos los jugadores.");
                 } else {
-                    Player target = org.bukkit.Bukkit.getPlayer(targetName);
+                    Player target = Bukkit.getPlayer(targetName);
                     if (target == null) {
                         player.sendMessage(msg.getMessage("prefix") + "§cJugador no encontrado: " + targetName);
-                        return true;
+                        return;
                     }
                     PkCinematics.getApi().getPlaybackManager().play(target, cin);
                     player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para " + target.getName() + ".");
@@ -229,19 +242,19 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 PkCinematics.getApi().getPlaybackManager().play(player, cin);
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_playing"));
             }
-            return true;
+            return;
         }
 
         if (sub.equals("stop")) {
             PkCinematics.getApi().getPlaybackManager().stop(player);
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_stopped"));
-            return true;
+            return;
         }
         
         if (sub.equals("reload")) {
             if (args.length < 2) {
                 player.sendMessage(msg.getMessage("prefix") + "§cUso: /cinematic reload <cinematics|triggers|messages|all>");
-                return true;
+                return;
             }
             String target = args[1].toLowerCase();
             
@@ -262,29 +275,29 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
                 PkCinematics.getApi().getMessageManager().reload();
                 player.sendMessage(msg.getMessage("prefix") + "§aMensajes recargados exitosamente.");
             }
-            return true;
+            return;
         }
 
         if (sub.equals("debug")) {
-            com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl pbManager = (com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl) PkCinematics.getApi().getPlaybackManager();
+            PlaybackManagerImpl pbManager = (PlaybackManagerImpl) PkCinematics.getApi().getPlaybackManager();
             pbManager.toggleDebug(player);
             if (pbManager.isDebugEnabled(player)) {
                 player.sendMessage(msg.getMessage("prefix") + "§aModo debug de cinemáticas ACTIVADO.");
             } else {
                 player.sendMessage(msg.getMessage("prefix") + "§cModo debug de cinemáticas DESACTIVADO.");
             }
-            return true;
+            return;
         }
 
-        return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!sender.hasPermission("pkcinematics.admin")) return java.util.Collections.emptyList();
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (!sender.hasPermission("pkcinematics.admin")) return Collections.emptyList();
         
         if (args.length == 1) {
-            List<String> results = new java.util.ArrayList<>();
+            List<String> results = new ArrayList<>();
             for (String s : new String[]{"create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug"}) {
                 if (s.startsWith(args[0].toLowerCase())) results.add(s);
             }
@@ -293,19 +306,19 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
         
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("reload")) {
-                List<String> results = new java.util.ArrayList<>();
+                List<String> results = new ArrayList<>();
                 for (String s : new String[]{"cinematics", "triggers", "messages", "all"}) {
                     if (s.startsWith(args[1].toLowerCase())) results.add(s);
                 }
                 return results;
             } else if (args[0].equalsIgnoreCase("play") || args[0].equalsIgnoreCase("edit")) {
-                List<String> results = new java.util.ArrayList<>();
+                List<String> results = new ArrayList<>();
                 for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
                     if (cin.getId().toLowerCase().startsWith(args[1].toLowerCase())) results.add(cin.getId());
                 }
                 return results;
             } else if (args[0].equalsIgnoreCase("point")) {
-                List<String> results = new java.util.ArrayList<>();
+                List<String> results = new ArrayList<>();
                 if ("edit".startsWith(args[1].toLowerCase())) results.add("edit");
                 return results;
             }
@@ -313,10 +326,10 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
         
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("play")) {
-                List<String> results = new java.util.ArrayList<>();
+                List<String> results = new ArrayList<>();
                 if ("todos".startsWith(args[2].toLowerCase())) results.add("todos");
                 if ("all".startsWith(args[2].toLowerCase())) results.add("all");
-                for (Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
                     if (p.getName().toLowerCase().startsWith(args[2].toLowerCase())) results.add(p.getName());
                 }
                 return results;
@@ -324,13 +337,30 @@ public class CinematicCommand implements CommandExecutor, TabCompleter {
         }
         
         if (args.length == 4 && args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
-            List<String> results = new java.util.ArrayList<>();
-            for (String s : new String[]{"time", "tick", "fov", "interp"}) {
+            List<String> results = new ArrayList<>();
+            for (String s : new String[]{"time", "tick", "fov", "interp", "easing"}) {
                 if (s.startsWith(args[3].toLowerCase())) results.add(s);
             }
             return results;
         }
         
-        return java.util.Collections.emptyList();
+        if (args.length == 5 && args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
+            if (args[3].equalsIgnoreCase("interp")) {
+                List<String> results = new ArrayList<>();
+                for (String s : new String[]{"LINEAR", "CATMULL_ROM"}) {
+                    if (s.startsWith(args[4].toUpperCase())) results.add(s);
+                }
+                return results;
+            }
+            if (args[3].equalsIgnoreCase("easing")) {
+                List<String> results = new ArrayList<>();
+                for (String s : new String[]{"LINEAR", "EASE_IN", "EASE_OUT", "SMOOTH"}) {
+                    if (s.startsWith(args[4].toUpperCase())) results.add(s);
+                }
+                return results;
+            }
+        }
+        
+        return Collections.emptyList();
     }
 }

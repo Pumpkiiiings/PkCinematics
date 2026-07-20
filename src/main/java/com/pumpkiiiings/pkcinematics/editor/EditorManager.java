@@ -5,6 +5,7 @@ import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.pumpkiiiings.pkcinematics.config.MessageManager;
 
 public class EditorManager {
     
@@ -12,14 +13,14 @@ public class EditorManager {
 
     public void startEditing(Player player, Cinematic cinematic) {
         activeEditors.put(player.getUniqueId(), new EditorSession(player, cinematic));
-        com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
         player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_start", "name", cinematic.getId()));
     }
 
     public void stopEditing(Player player) {
         EditorSession session = activeEditors.remove(player.getUniqueId());
         if (session != null) {
-            com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+            MessageManager msg = PkCinematics.getApi().getMessageManager();
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_stop", "name", session.getCinematic().getId()));
         }
     }

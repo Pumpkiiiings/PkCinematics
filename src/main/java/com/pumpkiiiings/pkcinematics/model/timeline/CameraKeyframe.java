@@ -7,10 +7,11 @@ public class CameraKeyframe {
     private float yaw, pitch;
     private float fov;
     private String interpolationType; // e.g., "LINEAR"
+    private String easingType; // e.g., "LINEAR"
 
     public CameraKeyframe() {}
 
-    public CameraKeyframe(int tick, String worldName, double x, double y, double z, float yaw, float pitch, float fov, String interpolationType) {
+    public CameraKeyframe(int tick, String worldName, double x, double y, double z, float yaw, float pitch, float fov, String interpolationType, String easingType) {
         this.tick = tick;
         this.worldName = worldName;
         this.x = x;
@@ -20,6 +21,7 @@ public class CameraKeyframe {
         this.pitch = pitch;
         this.fov = fov;
         this.interpolationType = interpolationType;
+        this.easingType = easingType;
     }
 
     public int getTick() { return tick; }
@@ -48,4 +50,7 @@ public class CameraKeyframe {
 
     public String getInterpolationType() { return interpolationType; }
     public void setInterpolationType(String interpolationType) { this.interpolationType = interpolationType; }
+
+    public String getEasingType() { return easingType; }
+    public void setEasingType(String easingType) { this.easingType = easingType; }
 }

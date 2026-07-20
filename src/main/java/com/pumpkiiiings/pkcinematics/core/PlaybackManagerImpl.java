@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
+import org.bukkit.Bukkit;
 
 public class PlaybackManagerImpl implements PlaybackManager {
     
@@ -59,14 +62,14 @@ public class PlaybackManagerImpl implements PlaybackManager {
         scheduler.getCinematicEntityIds().add(player.getEntityId());
         
         // 3c. Hide all other players from the cinematic player (keeps them in Tab)
-        int[] entityIds = org.bukkit.Bukkit.getOnlinePlayers().stream()
+        int[] entityIds = Bukkit.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player))
                 .mapToInt(Player::getEntityId)
                 .toArray();
         if (entityIds.length > 0) {
-            com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities destroyPacket = 
-                    new com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities(entityIds);
-            com.github.retrooper.packetevents.PacketEvents.getAPI().getPlayerManager().sendPacket(player, destroyPacket);
+            WrapperPlayServerDestroyEntities destroyPacket = 
+                    new WrapperPlayServerDestroyEntities(entityIds);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, destroyPacket);
         }
 
         

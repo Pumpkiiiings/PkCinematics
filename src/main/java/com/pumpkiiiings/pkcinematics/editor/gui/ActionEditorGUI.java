@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.pumpkiiiings.pkcinematics.config.MessageManager;
 
 public class ActionEditorGUI implements Listener {
 
@@ -28,7 +29,7 @@ public class ActionEditorGUI implements Listener {
     private static final Map<UUID, Integer> pendingTitleInput = new ConcurrentHashMap<>();
 
     public static void openMainMenu(Player player, EditorSession session, int tick) {
-        com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
         String mainTitle = msg.getMessage("gui.main_title", "tick", tick);
         Inventory inv = Bukkit.createInventory(null, 54, mainTitle);
         
@@ -58,7 +59,7 @@ public class ActionEditorGUI implements Listener {
     }
     
     public static void openAddMenu(Player player, int tick) {
-        com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
         String addTitle = msg.getMessage("gui.add_title") + " - " + tick;
         Inventory inv = Bukkit.createInventory(null, 27, addTitle);
         
@@ -79,7 +80,7 @@ public class ActionEditorGUI implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
         String title = event.getView().getTitle();
-        com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
         
         if (title.contains("Acciones - Tick: ")) {
             event.setCancelled(true);
@@ -129,7 +130,7 @@ public class ActionEditorGUI implements Listener {
         if (pendingTitleInput.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             int tick = pendingTitleInput.remove(player.getUniqueId());
-            com.pumpkiiiings.pkcinematics.config.MessageManager msg = PkCinematics.getApi().getMessageManager();
+            MessageManager msg = PkCinematics.getApi().getMessageManager();
             
             if (event.getMessage().equalsIgnoreCase("cancelar")) {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("chat_input_cancelled"));

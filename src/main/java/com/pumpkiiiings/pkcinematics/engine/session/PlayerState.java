@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Represents the complete state of a player to be restored after a cinematic.
@@ -22,7 +23,7 @@ public class PlayerState {
     private float walkSpeed;
     private float flySpeed;
     // We will save entity mount uuid instead of the entity itself to avoid memory leaks
-    private java.util.UUID vehicleUuid; 
+    private UUID vehicleUuid; 
 
     public PlayerState() {}
 
@@ -59,6 +60,6 @@ public class PlayerState {
     public float getFlySpeed() { return flySpeed; }
     public void setFlySpeed(float flySpeed) { this.flySpeed = flySpeed; }
 
-    public java.util.UUID getVehicleUuid() { return vehicleUuid; }
-    public void setVehicleUuid(java.util.UUID vehicleUuid) { this.vehicleUuid = vehicleUuid; }
+    public UUID getVehicleUuid() { return vehicleUuid; }
+    public void setVehicleUuid(UUID vehicleUuid) { this.vehicleUuid = vehicleUuid; }
 }

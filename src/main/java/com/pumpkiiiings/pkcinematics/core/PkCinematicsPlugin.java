@@ -40,6 +40,11 @@ import com.pumpkiiiings.pkcinematics.condition.impl.GamemodeCondition;
 import com.pumpkiiiings.pkcinematics.condition.impl.PlayedBeforeCondition;
 import com.pumpkiiiings.pkcinematics.listener.TriggerListener;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession;
+import com.pumpkiiiings.pkcinematics.listener.PlayerSkipCinematicListener;
+import com.pumpkiiiings.pkcinematics.model.Cinematic;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.List;
 
 public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     
@@ -83,7 +88,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.triggerRegistry = new TriggerRegistry();
         this.triggerManager = new TriggerManager(getDataFolder(), getLogger());
         this.cameraController = new PacketCameraController();
-        this.cinematicScheduler = new CinematicScheduler(this.cameraController);
+        this.cinematicScheduler = new CinematicScheduler(this, this.cameraController);
         this.repository = new YamlCinematicRepository(this);
         this.cinematicManager = new CinematicManagerImpl();
         this.stateRestorer = new DefaultPlayerStateRestorer(this);
@@ -91,7 +96,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.editorManager = new EditorManager();
         
         // Load cinematics from disk
-        for (com.pumpkiiiings.pkcinematics.model.Cinematic c : this.repository.loadAll()) {
+        for (Cinematic c : this.repository.loadAll()) {
             this.cinematicManager.registerCinematic(c);
         }
         
@@ -127,18 +132,15 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         // Load triggers
         this.triggerManager.loadAll();
         
-        // Start Scheduler
-        this.cinematicScheduler.runTaskTimer(this, 1L, 1L);
-        
         // Register commands
-        CinematicCommand commandExecutor = new CinematicCommand(this.editorManager, this.repository);
-        getCommand("cinematic").setExecutor(commandExecutor);
-        getCommand("cinematic").setTabCompleter(commandExecutor);
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            event.registrar().register("cinematic", "Comandos del motor de cinemáticas", List.of("cinematics", "pkcinematics", "pkc"), new CinematicCommand(this.editorManager, this.repository));
+        });
         
         // Register events
         getServer().getPluginManager().registerEvents(new ActionEditorGUI(), this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
-        getServer().getPluginManager().registerEvents(new com.pumpkiiiings.pkcinematics.listener.PlayerSkipCinematicListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerSkipCinematicListener(), this);
         
         getLogger().info("PkCinematics (v2 Timeline Architecture) enabled!");
     }
@@ -148,7 +150,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         PacketEvents.getAPI().terminate();
         PkCinematicsProvider.unregister();
         // Restore all players in sessions
-        for (com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession session : this.cinematicScheduler.getActiveSessions()) {
+        for (PlaybackSession session : this.cinematicScheduler.getActiveSessions()) {
             this.playbackManager.stop(session.getPlayer());
         }
     }
