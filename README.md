@@ -1,47 +1,56 @@
 # PkCinematics
 
-**PkCinematics** es un motor avanzado de cinemáticas para Minecraft basado en **Paper** y **Folia**. Permite a los administradores crear increíbles recorridos de cámara fluidos, añadir efectos visuales y sonoros en momentos exactos (línea de tiempo), y reproducir escenas automáticamente usando un sistema de Triggers.
+PkCinematics is a lightweight and highly customizable cinematic engine plugin for Paper Minecraft servers. It allows you to create smooth camera movements and trigger complex sequences (such as titles, chat messages, sound effects, particles, and time changes) directly in-game.
 
-Todo el procesamiento de la cámara se realiza enviando paquetes directamente a los jugadores (gracias a *PacketEvents*), lo que significa que el plugin es extremadamente ligero y **no** teleporta al jugador real, evitando problemas de chunks, caídas por daño de caída o incompatibilidades de anticheats.
+## Features
 
-## ✨ Características Principales
+- **Smooth Interpolations:** Move the camera fluidly using Linear or Catmull-Rom spline interpolation.
+- **Dynamic Easings:** Control the camera speed seamlessly with Linear, Ease In, Ease Out, or Smooth easing types.
+- **In-Game GUI Editor:** Build and tweak cinematics without touching any config files using an intuitive graphical interface.
+- **Action Timeline:** Trigger precise events on specific ticks (e.g., spawn particles, play sounds, display titles).
+- **Waiting System:** Define pauses at specific camera points seamlessly, without breaking smooth interpolation.
+- **Triggers:** Automatically launch cinematics based on events like joining the server, reaching certain coordinates, or triggering WorldGuard regions.
+- **Skip System:** Option for players to skip cutscenes by pressing Shift.
+- **100% Configurable:** Every single message, GUI string, and prompt is fully customizable (0 hardcode system).
 
-* **Editor In-Game Visual:** Crea, edita y ajusta cinemáticas y acciones sin salir del juego.
-* **Sistema de Timeline Avanzado:** Configura mensajes, títulos, comandos, sonidos y partículas para que ocurran en `ticks` específicos durante la cinemática.
-* **Cámara de Alta Fluidez:**
-  * Interpolación matemática **Catmull-Rom** para movimientos de cámara perfectamente curvos y sin cortes.
-  * Funciones de **Easing** (Aceleración): Movimientos `Smooth`, `Ease-In` o `Ease-Out` que aportan un toque 100% profesional.
-  * **Transición de FOV (Zoom):** Acércate dramáticamente a un objetivo controlando el FOV del jugador en cada punto.
-* **Reproducción Automática (Triggers):** Configura cinemáticas para que se reproduzcan solas cuando un jugador entra al servidor por primera vez, cambia de mundo, muere, etc.
-* **Soporte Folia / Paper:** Desarrollado utilizando `EntityScheduler` para garantizar la compatibilidad con servidores multihilo.
-* **Restaura el Estado:** El plugin recuerda la ubicación, inventario, vida y modo de juego del jugador. Al terminar la cinemática, todo vuelve a la normalidad.
+## Dependencies
 
-## 📦 Instalación
+- **Server version:** Paper 1.21.x (Built for 1.21.1)
+- **PacketEvents:** Required for camera packet manipulation. Ensure `packetevents-spigot` (2.13.0+) is installed on your server.
+- **Triumph GUI:** Included natively (shaded).
 
-1. Asegúrate de estar ejecutando un servidor compatible con **Paper**, **Purpur** o **Folia** (Minecraft 1.20 o superior).
-2. Necesitarás instalar el plugin **[PacketEvents](https://github.com/retrooper/packetevents/releases)** en la carpeta `plugins`.
-3. Descarga **PkCinematics** y colócalo en tu carpeta `plugins/`.
-4. Reinicia tu servidor.
-5. Usa `/cinematic create <nombre>` para empezar tu primera obra maestra.
+## Commands and Permissions
 
-## 📚 Documentación y Guías
+All commands require the `pkcinematics.admin` permission. Regular players do not need any permission to view cinematics.
 
-Toda la documentación detallada sobre cómo sacarle el máximo partido al plugin se encuentra en la carpeta `docs/`. **¡Empieza por aquí!**
+| Command | Description |
+|---------|-------------|
+| `/cinematic menu` | Opens the main list of cinematics. |
+| `/cinematic create <id>` | Creates a new cinematic and opens the editor. |
+| `/cinematic edit <id>` | Opens an existing cinematic for editing. |
+| `/cinematic point` | Quick command to add a camera point at your current location and rotation. |
+| `/cinematic save` | Saves the cinematic you are currently editing and closes the editor. |
+| `/cinematic play <id> [player]` | Plays a cinematic. If no player is specified, it plays for you. |
+| `/cinematic stop` | Stops the cinematic you are currently watching. |
+| `/cinematic reload` | Reloads all configurations (messages, GUIs, triggers). |
+| `/cinematic debug` | Toggles debug mode to see background events in the chat. |
 
-1. **[Empezando: Tu primera cinemática](docs/getting-started.md)**
-2. **[El Editor GUI In-Game](docs/editor.md)**
-3. **[Guía de Movimiento y Cámara (Easing y FOV)](docs/interpolations.md)**
-4. **[Comandos y Permisos](docs/commands-and-permissions.md)**
-5. **[Librería de Acciones y Efectos](docs/actions-library.md)**
-6. **[Triggers (Eventos automáticos)](docs/triggers-and-conditions.md)**
-7. **[Configuración Avanzada y YAML](docs/yaml-format.md)**
-8. **[Traducciones (messages.yml)](docs/config-messages.md)**
+## Quick Start
 
-## 🛡️ Soporte y Dependencias
+1. Type `/cinematic menu` and click "Create New Cinematic".
+2. Type an ID in chat (e.g., `intro`).
+3. Fly to your starting location and click **"Add Point Here"** (or type `/cinematic point`).
+4. Fly to the next location and repeat.
+5. In the Keyframes menu, left-click a point to adjust the tick (time), interpolation, easing, or add waiting time.
+6. Click **"Actions"** to add titles or sounds at specific ticks.
+7. Click **"Save and Exit"**, then use `/cinematic play intro` to see it in action!
 
-- **Servidor Requerido:** Paper / Purpur / Folia (Basado en `paper-plugin.yml`).
-- **Java:** Java 21+.
-- **Dependencia Principal:** `PacketEvents` (API 2.13.0).
+## Documentation
+
+For a detailed explanation of triggers, conditions, action types, and YAML formatting, check out the documentation in the `/docs` folder!
+
+- [English Documentation](./docs/README.md)
+- [Documentación en Español](./docs/README_ES.md)
 
 ---
-*Hecho con ❤️ para creadores de servidores de Minecraft.*
+*Created by Pumpkiiiings*
