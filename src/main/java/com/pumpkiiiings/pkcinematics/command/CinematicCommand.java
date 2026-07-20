@@ -286,71 +286,78 @@ public class CinematicCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
         if (!sender.hasPermission("pkcinematics.admin")) return Collections.emptyList();
         
+        List<String> results = new ArrayList<>();
+        
         if (args.length == 1) {
-            List<String> results = new ArrayList<>();
             for (String s : new String[]{"create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug"}) {
-                if (s.startsWith(args[0].toLowerCase())) results.add(s);
+                if (s.toLowerCase().startsWith(args[0].toLowerCase())) results.add(s);
             }
             return results;
         }
         
         if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("reload")) {
-                List<String> results = new ArrayList<>();
+            String sub = args[0].toLowerCase();
+            if (sub.equals("reload")) {
                 for (String s : new String[]{"cinematics", "triggers", "messages", "all"}) {
-                    if (s.startsWith(args[1].toLowerCase())) results.add(s);
+                    if (s.toLowerCase().startsWith(args[1].toLowerCase())) results.add(s);
                 }
-                return results;
-            } else if (args[0].equalsIgnoreCase("play") || args[0].equalsIgnoreCase("edit")) {
-                List<String> results = new ArrayList<>();
+            } else if (sub.equals("play") || sub.equals("edit")) {
                 for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
                     if (cin.getId().toLowerCase().startsWith(args[1].toLowerCase())) results.add(cin.getId());
                 }
-                return results;
-            } else if (args[0].equalsIgnoreCase("point")) {
-                List<String> results = new ArrayList<>();
+            } else if (sub.equals("point")) {
                 if ("edit".startsWith(args[1].toLowerCase())) results.add("edit");
-                return results;
             }
+            return results;
         }
         
         if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("play")) {
-                List<String> results = new ArrayList<>();
+            String sub = args[0].toLowerCase();
+            if (sub.equals("play")) {
                 if ("todos".startsWith(args[2].toLowerCase())) results.add("todos");
                 if ("all".startsWith(args[2].toLowerCase())) results.add("all");
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (p.getName().toLowerCase().startsWith(args[2].toLowerCase())) results.add(p.getName());
                 }
-                return results;
-            }
-        }
-        
-        if (args.length == 4 && args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
-            List<String> results = new ArrayList<>();
-            for (String s : new String[]{"time", "tick", "fov", "interp", "easing"}) {
-                if (s.startsWith(args[3].toLowerCase())) results.add(s);
+            } else if (sub.equals("point") && args[1].equalsIgnoreCase("edit")) {
+                if (sender instanceof Player) {
+                    EditorSession session = editorManager.getSession((Player) sender);
+                    if (session != null) {
+                        int size = session.getCinematic().getTimeline().getCameraTrack().getKeyframes().size();
+                        for (int i = 0; i < size; i++) {
+                            if (String.valueOf(i).startsWith(args[2])) results.add(String.valueOf(i));
+                        }
+                    }
+                }
             }
             return results;
         }
         
-        if (args.length == 5 && args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
-            if (args[3].equalsIgnoreCase("interp")) {
-                List<String> results = new ArrayList<>();
-                for (String s : new String[]{"LINEAR", "CATMULL_ROM"}) {
-                    if (s.startsWith(args[4].toUpperCase())) results.add(s);
+        if (args.length == 4) {
+            if (args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
+                for (String s : new String[]{"time", "tick", "fov", "interp", "easing"}) {
+                    if (s.toLowerCase().startsWith(args[3].toLowerCase())) results.add(s);
                 }
-                return results;
             }
-            if (args[3].equalsIgnoreCase("easing")) {
-                List<String> results = new ArrayList<>();
-                for (String s : new String[]{"LINEAR", "EASE_IN", "EASE_OUT", "SMOOTH"}) {
-                    if (s.startsWith(args[4].toUpperCase())) results.add(s);
-                }
-                return results;
-            }
+            return results;
         }
         
-        return Collections.emptyList();
+        if (args.length == 5) {
+            if (args[0].equalsIgnoreCase("point") && args[1].equalsIgnoreCase("edit")) {
+                String prop = args[3].toLowerCase();
+                if (prop.equals("interp")) {
+                    for (String s : new String[]{"LINEAR", "CATMULL_ROM"}) {
+                        if (s.toLowerCase().startsWith(args[4].toLowerCase())) results.add(s);
+                    }
+                } else if (prop.equals("easing")) {
+                    for (String s : new String[]{"LINEAR", "EASE_IN", "EASE_OUT", "SMOOTH"}) {
+                        if (s.toLowerCase().startsWith(args[4].toLowerCase())) results.add(s);
+                    }
+                }
+            }
+            return results;
+        }
+        
+        return results;
     }
 }
