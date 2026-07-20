@@ -3,6 +3,7 @@ package com.pumpkiiiings.pkcinematics.command;
 import com.pumpkiiiings.pkcinematics.api.PkCinematics;
 import com.pumpkiiiings.pkcinematics.editor.EditorManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorSession;
+import com.pumpkiiiings.pkcinematics.editor.gui.menu.MainEditorGui;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraTrack;
@@ -16,7 +17,6 @@ import java.util.List;
 import com.pumpkiiiings.pkcinematics.api.storage.CinematicRepository;
 import com.pumpkiiiings.pkcinematics.config.MessageManager;
 import com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl;
-import com.pumpkiiiings.pkcinematics.editor.gui.ActionEditorGUI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,6 +74,7 @@ public class CinematicCommand implements BasicCommand {
             Cinematic cin = new Cinematic(id);
             PkCinematics.getApi().getCinematicManager().registerCinematic(cin);
             editorManager.startEditing(player, cin);
+            MainEditorGui.open(player, editorManager.getSession(player));
             return;
         }
 
@@ -89,6 +90,7 @@ public class CinematicCommand implements BasicCommand {
                 return;
             }
             editorManager.startEditing(player, cin);
+            MainEditorGui.open(player, editorManager.getSession(player));
             return;
         }
 
@@ -104,7 +106,7 @@ public class CinematicCommand implements BasicCommand {
                     return;
                 }
                 int index;
-                try { index = Integer.parseInt(args[2]); } catch(Exception e) { return true; }
+                try { index = Integer.parseInt(args[2]); } catch(Exception e) { return; }
                 
                 CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
                 if (index < 0 || index >= track.getKeyframes().size()) {
@@ -153,13 +155,10 @@ public class CinematicCommand implements BasicCommand {
                 currentMaxTick = track.getKeyframes().get(track.getKeyframes().size() - 1).getTick();
             }
             
-            // Add 60 ticks (3 seconds) by default if there is a previous point
             int newTick = track.getKeyframes().isEmpty() ? 0 : currentMaxTick + 60;
             
             Location loc = player.getEyeLocation();
             
-            // Minecraft ArmorStand Eye Height is approximately 1.62.
-            // If we want the camera exactly at the player's eyes, we must spawn the entity 1.62 blocks below.
             double cameraY = loc.getY() - Double.parseDouble("1.62");
             
             CameraKeyframe kf = new CameraKeyframe(
@@ -167,13 +166,13 @@ public class CinematicCommand implements BasicCommand {
                 loc.getWorld().getName(),
                 loc.getX(), cameraY, loc.getZ(),
                 loc.getYaw(), loc.getPitch(),
-                Float.parseFloat("70.0"), // Default FOV
-                "LINEAR", // Default interpolation
-                "LINEAR" // Default easing
+                Float.parseFloat("70.0"),
+                "LINEAR",
+                "LINEAR"
             );
             
             track.addKeyframe(kf);
-            session.getCinematic().getTimeline().calculateDuration(); // Update total duration
+            session.getCinematic().getTimeline().calculateDuration();
             
             int index = track.getKeyframes().indexOf(kf);
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_point_added", "index", index, "tick", newTick));
@@ -198,16 +197,7 @@ public class CinematicCommand implements BasicCommand {
                 player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
                 return;
             }
-            if (args.length < 2) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_actions"));
-                return;
-            }
-            try {
-                int tick = Integer.parseInt(args[1]);
-                ActionEditorGUI.openMainMenu(player, session, tick);
-            } catch (Exception e) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_index"));
-            }
+            MainEditorGui.open(player, session);
             return;
         }
         

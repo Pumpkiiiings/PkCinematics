@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.pumpkiiiings.pkcinematics'
-version = '1.3'
+version = '1.4'
 
 repositories {
     mavenCentral()
@@ -31,6 +31,9 @@ dependencies {
 
     // PacketEvents — shaded in the release jar, provided by the server in dev builds
     implementation 'com.github.retrooper:packetevents-spigot:2.13.0'
+    
+    // Triumph GUI
+    implementation 'dev.triumphteam:triumph-gui:3.1.13'
 }
 
 def targetJavaVersion = 21
@@ -62,6 +65,7 @@ processResources {
 shadowJar {
     relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
     relocate 'io.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.ioretrograder'
+    relocate 'dev.triumphteam.gui', 'com.pumpkiiiings.pkcinematics.libs.triumphgui'
     archiveClassifier.set('')
 }
 

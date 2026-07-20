@@ -7,6 +7,9 @@ import com.pumpkiiiings.pkcinematics.api.trigger.TriggerRegistry;
 import com.pumpkiiiings.pkcinematics.config.MessageManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorManager;
 
+import com.pumpkiiiings.pkcinematics.editor.gui.ChatInputManager;
+import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
+
 public interface PkCinematics {
     
     /**
@@ -38,6 +41,10 @@ public interface PkCinematics {
      * @return the trigger manager
      */
     TriggerManager getTriggerManager();
+    
+    GuiConfigManager getGuiConfigManager();
+    
+    ChatInputManager getChatInputManager();
     
     /**
      * Get the TriggerRegistry instance.

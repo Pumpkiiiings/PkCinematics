@@ -1,0 +1,199 @@
+# ==========================================
+# PkCinematics - Configuración del Menú GUI
+# ==========================================
+
+# =================
+# Menú Principal
+# =================
+main:
+  title: "&8Editando: &d%cinematic%"
+  items:
+    info:
+      material: "BOOK"
+      name: "&eInformación General"
+      lore:
+        - "&7Duración total: &f%duration% ticks"
+        - "&7Puntos de Cámara: &f%keyframes%"
+        - "&7Acciones: &f%actions%"
+        - ""
+        - "&7ID: &8%id%"
+    
+    skipeable:
+      material: "MINECART"
+      name: "&aOpción Skipeable"
+      lore:
+        - "&7Si está activado, el jugador puede"
+        - "&7saltarse la cinemática pulsando Shift."
+        - ""
+        - "&7Estado actual: %status%"
+        - ""
+        - "&e► Clic para alternar"
+    
+    keyframes:
+      material: "ENDER_EYE"
+      name: "&bPuntos de Cámara (Keyframes)"
+      lore:
+        - "&7Edita la ruta y las posiciones"
+        - "&7por las que viajará la cámara."
+        - ""
+        - "&e► Clic para ver los puntos"
+        
+    actions:
+      material: "COMMAND_BLOCK"
+      name: "&dEventos y Acciones"
+      lore:
+        - "&7Añade títulos, sonidos, pociones"
+        - "&7y más en momentos exactos."
+        - ""
+        - "&e► Clic para ver línea de tiempo"
+        
+    play:
+      material: "EMERALD"
+      name: "&aReproducir (Probar)"
+      lore:
+        - "&7Prueba tu cinemática ahora mismo."
+        - ""
+        - "&e► Clic para probar"
+        
+    save:
+      material: "BARRIER"
+      name: "&cGuardar y Salir"
+      lore:
+        - "&7Guarda todos los cambios realizados"
+        - "&7y cierra el modo editor."
+        - ""
+        - "&e► Clic para salir"
+
+# =================
+# Lista de Keyframes
+# =================
+keyframes_list:
+  title: "&8Keyframes: &d%cinematic%"
+  add_point_btn:
+    material: "SLIME_BALL"
+    name: "&aAñadir Punto Aquí"
+    lore:
+      - "&7Añade un nuevo punto de cámara"
+      - "&7en tu posición exacta actual."
+      - ""
+      - "&e► Clic para añadir"
+  item:
+    material: "ENDER_PEARL"
+    name: "&bPunto &3#%index%"
+    lore:
+      - "&7Tiempo (Tick): &f%tick%"
+      - "&7FOV: &f%fov%"
+      - "&7Trayectoria: &f%interp%"
+      - "&7Aceleración: &f%easing%"
+      - ""
+      - "&a► Clic Izquierdo para Editar"
+      - "&c► Clic Derecho para Eliminar"
+
+# =================
+# Editor de Keyframe
+# =================
+keyframe_edit:
+  title: "&8Editando Punto &5#%index%"
+  items:
+    time:
+      material: "CLOCK"
+      name: "&eCambiar Tiempo (Tick)"
+      lore:
+        - "&7Valor actual: &f%value%"
+        - ""
+        - "&a► Clic para escribir en el chat"
+        
+    fov:
+      material: "SPYGLASS"
+      name: "&eCambiar Zoom (FOV)"
+      lore:
+        - "&7Valor actual: &f%value%"
+        - ""
+        - "&a► Clic para escribir en el chat"
+        
+    interp:
+      material: "COMPASS"
+      name: "&eTrayectoria (Interp)"
+      lore:
+        - "&7Valor actual: &f%value%"
+        - ""
+        - "&a► Clic para alternar valores"
+        - "&8(LINEAR, CATMULL_ROM)"
+        
+    easing:
+      material: "RABBIT_FOOT"
+      name: "&eAceleración (Easing)"
+      lore:
+        - "&7Valor actual: &f%value%"
+        - ""
+        - "&a► Clic para alternar valores"
+        - "&8(LINEAR, EASE_IN, EASE_OUT, SMOOTH)"
+
+# =================
+# Lista de Acciones
+# =================
+actions_list:
+  title: "&8Acciones: &d%cinematic%"
+  add_btn:
+    material: "NETHER_STAR"
+    name: "&aAñadir Acción"
+    lore:
+      - "&7Crea un nuevo evento visual"
+      - "&7o sonoro en la cinemática."
+      - ""
+      - "&e► Clic para añadir"
+  item:
+    material: "PAPER"
+    name: "&dAcción: &5%type%"
+    lore:
+      - "&7Tick: &f%tick%"
+      - ""
+      - "&c► Clic Derecho para Eliminar"
+
+# =================
+# Selector de Acción
+# =================
+action_selector:
+  title: "&8Selecciona una Acción"
+  items:
+    title:
+      material: "NAME_TAG"
+      name: "&dMostrar Título"
+      lore:
+        - "&7Muestra texto grande en pantalla."
+    message:
+      material: "PAPER"
+      name: "&dEnviar Mensaje"
+      lore:
+        - "&7Envía un mensaje al chat."
+    sound:
+      material: "NOTE_BLOCK"
+      name: "&dReproducir Sonido"
+      lore:
+        - "&7Reproduce un sonido de Minecraft."
+    particle:
+      material: "BLAZE_POWDER"
+      name: "&dGenerar Partículas"
+      lore:
+        - "&7Crea un efecto visual frente a la cámara."
+    time:
+      material: "CLOCK"
+      name: "&dCambiar la Hora"
+      lore:
+        - "&7Modifica el tiempo (solo visual)."
+
+# =================
+# Navegación y Varios
+# =================
+nav:
+  next:
+    material: "ARROW"
+    name: "&aSiguiente Página"
+  prev:
+    material: "ARROW"
+    name: "&cAnterior Página"
+  back:
+    material: "OAK_DOOR"
+    name: "&cVolver Atrás"
+  enabled: "&aActivado"
+  disabled: "&cDesactivado"

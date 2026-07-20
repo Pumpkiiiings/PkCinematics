@@ -46,6 +46,9 @@ import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 
+import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
+import com.pumpkiiiings.pkcinematics.editor.gui.ChatInputManager;
+
 public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     
     private ActionRegistry actionRegistry;
@@ -60,6 +63,9 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     private YamlCinematicRepository repository;
     private EditorManager editorManager;
     private MessageManager messageManager;
+
+    private GuiConfigManager guiConfigManager;
+    private ChatInputManager chatInputManager;
 
     @Override
     public void onLoad() {
@@ -136,13 +142,29 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register("cinematic", "Comandos del motor de cinemáticas", List.of("cinematics", "pkcinematics", "pkc"), new CinematicCommand(this.editorManager, this.repository));
         });
+        this.guiConfigManager = new GuiConfigManager(this);
+        this.chatInputManager = new ChatInputManager();
         
-        // Register events
-        getServer().getPluginManager().registerEvents(new ActionEditorGUI(), this);
+        getServer().getPluginManager().registerEvents(this.chatInputManager, this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSkipCinematicListener(), this);
         
-        getLogger().info("PkCinematics (v2 Timeline Architecture) enabled!");
+        int cinematicsCount = PkCinematics.getApi().getCinematicManager().getAllCinematics().size();
+        int triggersCount = this.triggerManager.getLoadedTriggersCount();
+        String version = getDescription().getVersion();
+        
+        org.bukkit.command.ConsoleCommandSender console = getServer().getConsoleSender();
+        console.sendMessage("§6");
+        console.sendMessage("§6█████▄ ▄▄ ▄▄ ▄█████ ▄▄ ▄▄  ▄▄ ▄▄▄▄▄ ▄▄   ▄▄  ▄▄▄ ▄▄▄▄▄▄ ▄▄  ▄▄▄▄ ");
+        console.sendMessage("§6██▄▄█▀ ██▄█▀ ██     ██ ███▄██ ██▄▄  ██▀▄▀██ ██▀██  ██   ██ ██▀▀▀ ");
+        console.sendMessage("§6██     ██ ██ ▀█████ ██ ██ ▀██ ██▄▄▄ ██   ██ ██▀██  ██   ██ ▀████ ");
+        console.sendMessage("§6");
+        console.sendMessage("§eCinematics Loaded: §f" + cinematicsCount);
+        console.sendMessage("§eTriggers Loaded: §f" + triggersCount);
+        console.sendMessage("§6");
+        console.sendMessage("§eAuthor: §fPumpkings");
+        console.sendMessage("§eVersion: §f" + version);
+        console.sendMessage("§6");
     }
 
     @Override
@@ -193,5 +215,14 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     @Override
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+
+    public GuiConfigManager getGuiConfigManager() {
+        return guiConfigManager;
+    }
+
+    @Override
+    public ChatInputManager getChatInputManager() {
+        return chatInputManager;
     }
 }

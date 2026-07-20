@@ -161,4 +161,12 @@ public class TriggerManager {
             }
         }
     }
+
+    public int getLoadedTriggersCount() {
+        int count = 0;
+        for (List<PkTrigger> list : triggersByType.values()) {
+            count += list.size();
+        }
+        return count;
+    }
 }
