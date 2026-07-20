@@ -6,6 +6,7 @@ import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.api.action.PkAction;
 import com.pumpkiiiings.pkcinematics.model.timeline.ActionTrack;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
+import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import dev.triumphteam.gui.guis.GuiItem;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ public class ActionsListGui {
         GuiConfigManager config = api.getGuiConfigManager();
         ActionTrack track = session.getCinematic().getTimeline().getActionTrack();
 
-        PaginatedGui gui = PaginatedGui.gui()
+        PaginatedGui gui = Gui.paginated()
                 .title(config.getComponent("actions_list.title", "cinematic", session.getCinematic().getId()))
                 .rows(6)
                 .pageSize(45)

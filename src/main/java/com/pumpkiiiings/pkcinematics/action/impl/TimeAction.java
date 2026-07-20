@@ -14,6 +14,11 @@ public class TimeAction implements PkAction {
 
     public TimeAction() {}
 
+    public TimeAction(long time) {
+        this.time = time;
+        this.relative = false;
+    }
+
     @Override
     public void execute(ActionContext context) {
         Player player = context.getPlayer();

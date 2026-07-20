@@ -15,7 +15,6 @@ import com.pumpkiiiings.pkcinematics.api.state.PlayerStateRestorer;
 import com.pumpkiiiings.pkcinematics.command.CinematicCommand;
 import com.pumpkiiiings.pkcinematics.config.MessageManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorManager;
-import com.pumpkiiiings.pkcinematics.editor.gui.ActionEditorGUI;
 import com.pumpkiiiings.pkcinematics.engine.camera.CameraPacketListener;
 import com.pumpkiiiings.pkcinematics.engine.camera.PacketCameraController;
 import com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl;

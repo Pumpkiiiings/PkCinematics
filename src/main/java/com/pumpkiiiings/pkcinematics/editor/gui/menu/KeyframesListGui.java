@@ -6,6 +6,7 @@ import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraTrack;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
+import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import dev.triumphteam.gui.guis.GuiItem;
 import org.bukkit.Location;
@@ -19,7 +20,7 @@ public class KeyframesListGui {
         GuiConfigManager config = api.getGuiConfigManager();
         CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
 
-        PaginatedGui gui = PaginatedGui.gui()
+        PaginatedGui gui = Gui.paginated()
                 .title(config.getComponent("keyframes_list.title", "cinematic", session.getCinematic().getId()))
                 .rows(6)
                 .pageSize(45)

@@ -20,6 +20,17 @@ public class ParticleAction implements PkAction {
 
     public ParticleAction() {}
 
+    public ParticleAction(String particleName, int count, double offsetX, double offsetY, double offsetZ, double speed) {
+        try {
+            this.particle = Particle.valueOf(particleName.toUpperCase());
+        } catch (Exception ignored) {}
+        this.count = count;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.offsetZ = offsetZ;
+        this.speed = speed;
+    }
+
     @Override
     public void execute(ActionContext context) {
         Player player = context.getPlayer();
