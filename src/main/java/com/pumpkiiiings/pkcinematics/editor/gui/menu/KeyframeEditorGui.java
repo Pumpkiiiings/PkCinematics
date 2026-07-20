@@ -8,6 +8,7 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import org.bukkit.entity.Player;
 import java.util.Comparator;
+import com.pumpkiiiings.pkcinematics.config.Messages;
 
 public class KeyframeEditorGui {
 
@@ -33,9 +34,9 @@ public class KeyframeEditorGui {
                             kf.setTick(newTick);
                             session.getCinematic().getTimeline().getCameraTrack().getKeyframes().sort(Comparator.comparingInt(CameraKeyframe::getTick));
                             session.getCinematic().getTimeline().calculateDuration();
-                            player.sendMessage("§aTick actualizado a " + newTick);
+                            player.sendMessage(Messages.EDITOR_TICK_UPDATED.getWithPrefix("value", String.valueOf(newTick)));
                         } catch (NumberFormatException e) {
-                            player.sendMessage("§cPor favor, escribe un número válido.");
+                            player.sendMessage(Messages.EDITOR_INVALID_NUMBER.getWithPrefix());
                         }
                         open(player, session, kf, session.getCinematic().getTimeline().getCameraTrack().getKeyframes().indexOf(kf));
                     });
@@ -49,9 +50,9 @@ public class KeyframeEditorGui {
                         try {
                             float newFov = Float.parseFloat(input);
                             kf.setFov(newFov);
-                            player.sendMessage("§aFOV actualizado a " + newFov);
+                            player.sendMessage(Messages.EDITOR_FOV_UPDATED.getWithPrefix("value", String.valueOf(newFov)));
                         } catch (NumberFormatException e) {
-                            player.sendMessage("§cPor favor, escribe un número decimal válido.");
+                            player.sendMessage(Messages.EDITOR_INVALID_DECIMAL.getWithPrefix());
                         }
                         open(player, session, kf, index);
                     });
@@ -65,7 +66,7 @@ public class KeyframeEditorGui {
                         try {
                             int waitTicks = Integer.parseInt(input);
                             if (waitTicks <= 0) {
-                                player.sendMessage("§cLos ticks de espera deben ser mayores a 0.");
+                                player.sendMessage(Messages.EDITOR_INVALID_WAIT_TICKS.getWithPrefix());
                                 return;
                             }
                             // Shift all keyframes after this one
@@ -98,10 +99,10 @@ public class KeyframeEditorGui {
                             session.getCinematic().getTimeline().getCameraTrack().addKeyframe(clone);
                             session.getCinematic().getTimeline().calculateDuration();
                             
-                            player.sendMessage("§aSe añadió un tiempo de espera de " + waitTicks + " ticks.");
+                            player.sendMessage(Messages.EDITOR_WAIT_TIME_ADDED.getWithPrefix("ticks", String.valueOf(waitTicks)));
                             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.2f);
                         } catch (NumberFormatException e) {
-                            player.sendMessage("§cPor favor, escribe un número válido.");
+                            player.sendMessage(Messages.EDITOR_INVALID_NUMBER.getWithPrefix());
                         }
                         KeyframesListGui.open(player, session);
                     });

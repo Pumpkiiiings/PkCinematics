@@ -51,3 +51,21 @@ help_actions: "&e/cinematic actions <tick>"
 help_save: "&e/cinematic save"
 help_play: "&e/cinematic play <nombre>"
 help_stop: "&e/cinematic stop"
+help_reload: "&e/cinematic reload <cinematics|triggers|messages|all> &7- Recarga configuraciones"
+
+# Editor UI / Errores
+editor_invalid_number: "&cPor favor, escribe un número válido."
+editor_invalid_decimal: "&cPor favor, escribe un número decimal válido."
+editor_invalid_wait_ticks: "&cLos ticks de espera deben ser mayores a 0."
+editor_wait_time_added: "&aSe añadió un tiempo de espera de {ticks} ticks."
+
+# Acciones
+editor_action_added: "&aAcción {type} añadida en el tick {tick}"
+editor_action_invalid_tick: "&cError: Escribe un número de tick válido (ej. 100)."
+
+# Chat Input
+chat_input_cancel_hint: "&7Escribe 'cancelar' para salir."
+
+# Varios
+debug_action_executed: "&8[&cDebug&8] &eAcción &b{type} &eejecutada en tick &a{tick}"
+reloaded: "&aConfiguración de {type} recargada exitosamente."

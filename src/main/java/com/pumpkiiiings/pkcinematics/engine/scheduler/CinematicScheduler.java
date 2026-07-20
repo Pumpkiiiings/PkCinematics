@@ -93,7 +93,7 @@ public class CinematicScheduler {
             for (PkAction action : actions) {
                 action.execute(context);
                 if (((PlaybackManagerImpl)PkCinematics.getApi().getPlaybackManager()).isDebugEnabled(session.getPlayer())) {
-                    session.getPlayer().sendMessage("§8[§cDebug§8] §eAcción §b" + action.getClass().getSimpleName() + " §eejecutada en tick §a" + currentTick);
+                    session.getPlayer().sendMessage(com.pumpkiiiings.pkcinematics.config.Messages.DEBUG_ACTION_EXECUTED.get("type", action.getClass().getSimpleName(), "tick", String.valueOf(currentTick)));
                 }
             }
         }

@@ -30,12 +30,22 @@ public class KeyframesListGui {
         int index = 0;
         for (CameraKeyframe kf : track.getKeyframes()) {
             final int currentIndex = index;
+            int waiting = 0;
+            if (index + 1 < track.getKeyframes().size()) {
+                CameraKeyframe nextKf = track.getKeyframes().get(index + 1);
+                if (kf.getX() == nextKf.getX() && kf.getY() == nextKf.getY() && kf.getZ() == nextKf.getZ() 
+                    && kf.getYaw() == nextKf.getYaw() && kf.getPitch() == nextKf.getPitch()) {
+                    waiting = nextKf.getTick() - kf.getTick();
+                }
+            }
+            
             ItemBuilder itemBuilder = config.getItemBuilder("keyframes_list.item",
                     "index", String.valueOf(index),
                     "tick", String.valueOf(kf.getTick()),
                     "fov", String.valueOf(kf.getFov()),
                     "interp", kf.getInterpolationType(),
-                    "easing", kf.getEasingType()
+                    "easing", kf.getEasingType(),
+                    "waiting", String.valueOf(waiting)
             );
 
             GuiItem guiItem = itemBuilder.asGuiItem(event -> {

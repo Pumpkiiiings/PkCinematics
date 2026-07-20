@@ -15,7 +15,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collection;
 import java.util.List;
 import com.pumpkiiiings.pkcinematics.api.storage.CinematicRepository;
-import com.pumpkiiiings.pkcinematics.config.MessageManager;
+import com.pumpkiiiings.pkcinematics.config.Messages;
 import com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,24 +38,22 @@ public class CinematicCommand implements BasicCommand {
         if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
         
-        MessageManager msg = PkCinematics.getApi().getMessageManager();
-
         if (!player.hasPermission("pkcinematics.admin")) {
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("no_permission"));
+            player.sendMessage(Messages.NO_PERMISSION.getWithPrefix());
             return;
         }
 
         if (args.length == 0) {
-            player.sendMessage(msg.getMessage("help_header"));
-            player.sendMessage(msg.getMessage("help_create"));
-            player.sendMessage("§e/cinematic edit §7- Abre el menú de edición");
-            player.sendMessage(msg.getMessage("help_point"));
-            player.sendMessage(msg.getMessage("help_point_edit"));
-            player.sendMessage(msg.getMessage("help_actions"));
-            player.sendMessage(msg.getMessage("help_save"));
-            player.sendMessage(msg.getMessage("help_play"));
-            player.sendMessage(msg.getMessage("help_stop"));
-            player.sendMessage("§e/cinematic reload (cinematics|triggers|messages|all) §7- Recarga configuraciones");
+            player.sendMessage(Messages.HELP_HEADER.get());
+            player.sendMessage(Messages.HELP_CREATE.get());
+            player.sendMessage(Messages.HELP_EDIT.get());
+            player.sendMessage(Messages.HELP_POINT.get());
+            player.sendMessage(Messages.HELP_POINT_EDIT.get());
+            player.sendMessage(Messages.HELP_ACTIONS.get());
+            player.sendMessage(Messages.HELP_SAVE.get());
+            player.sendMessage(Messages.HELP_PLAY.get());
+            player.sendMessage(Messages.HELP_STOP.get());
+            player.sendMessage(Messages.HELP_RELOAD.get());
             return;
         }
 
@@ -63,12 +61,12 @@ public class CinematicCommand implements BasicCommand {
 
         if (sub.equals("create")) {
             if (args.length < 2) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_create"));
+                player.sendMessage(Messages.HELP_CREATE.getWithPrefix());
                 return;
             }
             String id = args[1];
             if (PkCinematics.getApi().getCinematicManager().getCinematic(id) != null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("already_exists"));
+                player.sendMessage(Messages.ALREADY_EXISTS.getWithPrefix());
                 return;
             }
             Cinematic cin = new Cinematic(id);
@@ -87,7 +85,7 @@ public class CinematicCommand implements BasicCommand {
             String id = args[1];
             Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
             if (cin == null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("not_found"));
+                player.sendMessage(Messages.NOT_FOUND.getWithPrefix());
                 return;
             }
             editorManager.startEditing(player, cin);
@@ -99,11 +97,11 @@ public class CinematicCommand implements BasicCommand {
             if (args.length > 1 && args[1].equalsIgnoreCase("edit")) {
                 EditorSession session = editorManager.getSession(player);
                 if (session == null) {
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
+                    player.sendMessage(Messages.EDITOR_NOT_EDITING.getWithPrefix());
                     return;
                 }
                 if (args.length < 5) {
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_point_edit"));
+                    player.sendMessage(Messages.HELP_POINT_EDIT.getWithPrefix());
                     return;
                 }
                 int index;
@@ -111,7 +109,7 @@ public class CinematicCommand implements BasicCommand {
                 
                 CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
                 if (index < 0 || index >= track.getKeyframes().size()) {
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_index"));
+                    player.sendMessage(Messages.EDITOR_INVALID_INDEX.getWithPrefix());
                     return;
                 }
                 
@@ -128,25 +126,25 @@ public class CinematicCommand implements BasicCommand {
                         }
                     });
                     session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_tick_updated", "value", val));
+                    player.sendMessage(Messages.EDITOR_TICK_UPDATED.getWithPrefix("value", val));
                 } else if (prop.equals("fov")) {
                     kf.setFov(Float.parseFloat(val));
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_fov_updated", "value", val));
+                    player.sendMessage(Messages.EDITOR_FOV_UPDATED.getWithPrefix("value", val));
                 } else if (prop.equals("interp")) {
                     kf.setInterpolationType(val.toUpperCase());
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_interp_updated", "value", val));
+                    player.sendMessage(Messages.EDITOR_INTERP_UPDATED.getWithPrefix("value", val));
                 } else if (prop.equals("easing")) {
                     kf.setEasingType(val.toUpperCase());
-                    player.sendMessage(msg.getMessage("prefix") + "§aEasing actualizado a: " + val);
+                    player.sendMessage(Messages.EDITOR_INTERP_UPDATED.getWithPrefix("value", val));
                 } else {
-                    player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_invalid_property"));
+                    player.sendMessage(Messages.EDITOR_INVALID_PROPERTY.getWithPrefix());
                 }
                 return;
             }
 
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
+                player.sendMessage(Messages.EDITOR_NOT_EDITING.getWithPrefix());
                 return;
             }
             
@@ -177,19 +175,19 @@ public class CinematicCommand implements BasicCommand {
             
             int index = track.getKeyframes().indexOf(kf);
             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.2f);
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_point_added", "index", index, "tick", newTick));
+            player.sendMessage(Messages.EDITOR_POINT_ADDED.getWithPrefix("index", String.valueOf(index), "tick", String.valueOf(newTick)));
             return;
         }
         
         if (sub.equals("save")) {
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
+                player.sendMessage(Messages.EDITOR_NOT_EDITING.getWithPrefix());
                 return;
             }
             repository.save(session.getCinematic());
             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("saved", "name", session.getCinematic().getId()));
+            player.sendMessage(Messages.SAVED.getWithPrefix("name", session.getCinematic().getId()));
             editorManager.stopEditing(player);
             return;
         }
@@ -197,7 +195,7 @@ public class CinematicCommand implements BasicCommand {
         if (sub.equals("actions")) {
             EditorSession session = editorManager.getSession(player);
             if (session == null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_not_editing"));
+                player.sendMessage(Messages.EDITOR_NOT_EDITING.getWithPrefix());
                 return;
             }
             MainEditorGui.open(player, session);
@@ -206,13 +204,13 @@ public class CinematicCommand implements BasicCommand {
         
         if (sub.equals("play")) {
             if (args.length < 2) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_play"));
+                player.sendMessage(Messages.HELP_PLAY.getWithPrefix());
                 return;
             }
             String id = args[1];
             Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
             if (cin == null) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("not_found"));
+                player.sendMessage(Messages.NOT_FOUND.getWithPrefix());
                 return;
             }
 
@@ -221,32 +219,32 @@ public class CinematicCommand implements BasicCommand {
                 if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
                     List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
                     PkCinematics.getApi().getPlaybackManager().play(onlinePlayers, cin);
-                    player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para todos los jugadores.");
+                    // player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para todos los jugadores.");
                 } else {
                     Player target = Bukkit.getPlayer(targetName);
                     if (target == null) {
-                        player.sendMessage(msg.getMessage("prefix") + "§cJugador no encontrado: " + targetName);
+                        // player.sendMessage(msg.getMessage("prefix") + "§cJugador no encontrado: " + targetName);
                         return;
                     }
                     PkCinematics.getApi().getPlaybackManager().play(target, cin);
-                    player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para " + target.getName() + ".");
+                    // player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para " + target.getName() + ".");
                 }
             } else {
                 PkCinematics.getApi().getPlaybackManager().play(player, cin);
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_playing"));
+                player.sendMessage(Messages.PLAYBACK_PLAYING.getWithPrefix());
             }
             return;
         }
 
         if (sub.equals("stop")) {
             PkCinematics.getApi().getPlaybackManager().stop(player);
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("playback_stopped"));
+            player.sendMessage(Messages.PLAYBACK_STOPPED.getWithPrefix());
             return;
         }
         
         if (sub.equals("reload")) {
             if (args.length < 2) {
-                player.sendMessage(msg.getMessage("prefix") + "§cUso: /cinematic reload <cinematics|triggers|messages|all>");
+                player.sendMessage(Messages.HELP_RELOAD.getWithPrefix());
                 return;
             }
             String target = args[1].toLowerCase();
@@ -258,15 +256,15 @@ public class CinematicCommand implements BasicCommand {
                 for (Cinematic c : repository.loadAll()) {
                     PkCinematics.getApi().getCinematicManager().registerCinematic(c);
                 }
-                player.sendMessage(msg.getMessage("prefix") + "§aCinemáticas recargadas exitosamente.");
+                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Cinemáticas"));
             }
             if (target.equals("triggers") || target.equals("all")) {
                 PkCinematics.getApi().getTriggerManager().loadAll();
-                player.sendMessage(msg.getMessage("prefix") + "§aTriggers recargados exitosamente.");
+                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Triggers"));
             }
             if (target.equals("messages") || target.equals("all")) {
                 PkCinematics.getApi().getMessageManager().reload();
-                player.sendMessage(msg.getMessage("prefix") + "§aMensajes recargados exitosamente.");
+                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Mensajes"));
             }
             return;
         }
@@ -275,9 +273,9 @@ public class CinematicCommand implements BasicCommand {
             PlaybackManagerImpl pbManager = (PlaybackManagerImpl) PkCinematics.getApi().getPlaybackManager();
             pbManager.toggleDebug(player);
             if (pbManager.isDebugEnabled(player)) {
-                player.sendMessage(msg.getMessage("prefix") + "§aModo debug de cinemáticas ACTIVADO.");
+                player.sendMessage(Messages.PREFIX.get() + "§aModo debug de cinemáticas ACTIVADO.");
             } else {
-                player.sendMessage(msg.getMessage("prefix") + "§cModo debug de cinemáticas DESACTIVADO.");
+                player.sendMessage(Messages.PREFIX.get() + "§cModo debug de cinemáticas DESACTIVADO.");
             }
             return;
         }

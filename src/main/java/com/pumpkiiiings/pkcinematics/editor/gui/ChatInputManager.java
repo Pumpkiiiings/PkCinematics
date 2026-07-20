@@ -21,7 +21,7 @@ public class ChatInputManager implements Listener {
     public void requestInput(Player player, String promptMessage, Consumer<String> onInput) {
         player.closeInventory();
         player.sendMessage(promptMessage);
-        player.sendMessage("§7Escribe 'cancelar' para salir.");
+        player.sendMessage(com.pumpkiiiings.pkcinematics.config.Messages.CHAT_INPUT_CANCEL_HINT.getWithPrefix());
         pendingInputs.put(player.getUniqueId(), onInput);
     }
 
@@ -35,7 +35,7 @@ public class ChatInputManager implements Listener {
             
             Bukkit.getScheduler().runTask(PkCinematicsPlugin.getPlugin(PkCinematicsPlugin.class), () -> {
                 if (message.equalsIgnoreCase("cancelar")) {
-                    player.sendMessage("§cOperación cancelada.");
+                    player.sendMessage(com.pumpkiiiings.pkcinematics.config.Messages.CHAT_INPUT_CANCELLED.getWithPrefix());
                     // Reopen main menu? We would need to pass it, but for now we just cancel.
                     return;
                 }

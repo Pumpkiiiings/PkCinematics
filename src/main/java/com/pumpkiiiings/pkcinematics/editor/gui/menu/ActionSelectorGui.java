@@ -12,6 +12,7 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import org.bukkit.entity.Player;
 import java.util.function.Consumer;
+import com.pumpkiiiings.pkcinematics.config.Messages;
 
 public class ActionSelectorGui {
 
@@ -32,7 +33,7 @@ public class ActionSelectorGui {
                     TitleAction action = new TitleAction(text, "", 10, 60, 10);
                     session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
                     session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage("§aAcción Title añadida en el tick " + tick);
+                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Title", "tick", String.valueOf(tick)));
                     ActionsListGui.open(player, session);
                 });
             });
@@ -46,7 +47,7 @@ public class ActionSelectorGui {
                     MessageAction action = new MessageAction(text);
                     session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
                     session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage("§aAcción Message añadida en el tick " + tick);
+                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Message", "tick", String.valueOf(tick)));
                     ActionsListGui.open(player, session);
                 });
             });
@@ -60,7 +61,7 @@ public class ActionSelectorGui {
                     SoundAction action = new SoundAction(text, 1.0f, 1.0f);
                     session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
                     session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage("§aAcción Sound añadida en el tick " + tick);
+                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Sound", "tick", String.valueOf(tick)));
                     ActionsListGui.open(player, session);
                 });
             });
@@ -74,7 +75,7 @@ public class ActionSelectorGui {
                     ParticleAction action = new ParticleAction(text, 10, 1.0f, 1.0f, 1.0f, 0.1f);
                     session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
                     session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage("§aAcción Particle añadida en el tick " + tick);
+                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Particle", "tick", String.valueOf(tick)));
                     ActionsListGui.open(player, session);
                 });
             });
@@ -90,9 +91,9 @@ public class ActionSelectorGui {
                         TimeAction action = new TimeAction(t);
                         session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
                         session.getCinematic().getTimeline().calculateDuration();
-                        player.sendMessage("§aAcción Time añadida en el tick " + tick);
+                        player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Time", "tick", String.valueOf(tick)));
                     } catch (Exception ex) {
-                        player.sendMessage("§cPor favor escribe un número.");
+                        player.sendMessage(Messages.EDITOR_INVALID_NUMBER.getWithPrefix());
                     }
                     ActionsListGui.open(player, session);
                 });
@@ -112,7 +113,7 @@ public class ActionSelectorGui {
                 int tick = Integer.parseInt(input);
                 onSuccess.accept(tick);
             } catch (NumberFormatException e) {
-                player.sendMessage("§cError: Escribe un número de tick válido (ej. 100).");
+                player.sendMessage(Messages.EDITOR_ACTION_INVALID_TICK.getWithPrefix());
                 ActionsListGui.open(player, session);
             }
         });

@@ -105,6 +105,7 @@ keyframes_list:
     name: "&bPunto &3#%index%"
     lore:
       - "&7Tiempo (Tick): &f%tick%"
+      - "&eWaiting: &f%waiting% ticks"
       - "&7FOV: &f%fov%"
       - "&7Trayectoria: &f%interp%"
       - "&7Aceleración: &f%easing%"
