@@ -92,3 +92,4 @@ tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
 tasks.build {
     dependsOn shadowJar
 }
+
