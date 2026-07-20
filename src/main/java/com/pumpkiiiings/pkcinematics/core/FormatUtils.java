@@ -15,6 +15,9 @@ public class FormatUtils {
             return Component.empty();
         }
 
+        // Estandarizar section signs
+        text = text.replace("§", "&");
+
         // Translate legacy Hex (&#RRGGBB) to MiniMessage (<#RRGGBB>)
         Matcher hexMatcher = HEX_PATTERN.matcher(text);
         StringBuffer buffer = new StringBuffer();
@@ -25,28 +28,28 @@ public class FormatUtils {
         text = buffer.toString();
 
         // Translate legacy color codes to MiniMessage tags
-        text = text.replace("&0", "<black>")
-                   .replace("&1", "<dark_blue>")
-                   .replace("&2", "<dark_green>")
-                   .replace("&3", "<dark_aqua>")
-                   .replace("&4", "<dark_red>")
-                   .replace("&5", "<dark_purple>")
-                   .replace("&6", "<gold>")
-                   .replace("&7", "<gray>")
-                   .replace("&8", "<dark_gray>")
-                   .replace("&9", "<blue>")
-                   .replace("&a", "<green>")
-                   .replace("&b", "<aqua>")
-                   .replace("&c", "<red>")
-                   .replace("&d", "<light_purple>")
-                   .replace("&e", "<yellow>")
-                   .replace("&f", "<white>")
-                   .replace("&k", "<obfuscated>")
-                   .replace("&l", "<bold>")
-                   .replace("&m", "<strikethrough>")
-                   .replace("&n", "<underlined>")
-                   .replace("&o", "<italic>")
-                   .replace("&r", "<reset>");
+        text = text.replaceAll("(?i)&0", "<black>")
+                   .replaceAll("(?i)&1", "<dark_blue>")
+                   .replaceAll("(?i)&2", "<dark_green>")
+                   .replaceAll("(?i)&3", "<dark_aqua>")
+                   .replaceAll("(?i)&4", "<dark_red>")
+                   .replaceAll("(?i)&5", "<dark_purple>")
+                   .replaceAll("(?i)&6", "<gold>")
+                   .replaceAll("(?i)&7", "<gray>")
+                   .replaceAll("(?i)&8", "<dark_gray>")
+                   .replaceAll("(?i)&9", "<blue>")
+                   .replaceAll("(?i)&a", "<green>")
+                   .replaceAll("(?i)&b", "<aqua>")
+                   .replaceAll("(?i)&c", "<red>")
+                   .replaceAll("(?i)&d", "<light_purple>")
+                   .replaceAll("(?i)&e", "<yellow>")
+                   .replaceAll("(?i)&f", "<white>")
+                   .replaceAll("(?i)&k", "<obfuscated>")
+                   .replaceAll("(?i)&l", "<bold>")
+                   .replaceAll("(?i)&m", "<strikethrough>")
+                   .replaceAll("(?i)&n", "<underlined>")
+                   .replaceAll("(?i)&o", "<italic>")
+                   .replaceAll("(?i)&r", "<reset>");
 
         return MiniMessage.miniMessage().deserialize(text);
     }
