@@ -24,12 +24,12 @@ public class ActionBarAction implements PkAction {
         Player player = context.getPlayer();
         if (this.text == null || this.text.isEmpty()) return;
 
-        String parsedText = this.text.replace("&", "§");
+        String parsedText = this.text;
         for (Map.Entry<String, Object> entry : context.getVariables().entrySet()) {
             parsedText = parsedText.replace("%" + entry.getKey() + "%", String.valueOf(entry.getValue()));
         }
 
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(parsedText));
+        player.sendActionBar(com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(parsedText));
     }
 
     @Override

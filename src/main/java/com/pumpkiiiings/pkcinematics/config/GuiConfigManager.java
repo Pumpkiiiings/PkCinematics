@@ -39,7 +39,7 @@ public class GuiConfigManager {
     }
 
     public Component getComponent(String path) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString(path, path));
+        return com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(config.getString(path, path));
     }
     
     public Component getComponent(String path, String... placeholders) {
@@ -47,7 +47,7 @@ public class GuiConfigManager {
         for (int i = 0; i < placeholders.length; i += 2) {
             raw = raw.replace("%" + placeholders[i] + "%", placeholders[i + 1]);
         }
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(raw);
+        return com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(raw);
     }
     
     public ItemBuilder getItemBuilder(String path, String... placeholders) {
@@ -60,7 +60,7 @@ public class GuiConfigManager {
             name = name.replace("%" + placeholders[i] + "%", placeholders[i + 1]);
         }
         
-        Component nameComp = LegacyComponentSerializer.legacyAmpersand().deserialize(name)
+        Component nameComp = com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(name)
                 .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
         ItemBuilder builder = ItemBuilder.from(material).name(nameComp);
         
@@ -70,7 +70,7 @@ public class GuiConfigManager {
             for (int i = 0; i < placeholders.length; i += 2) {
                 line = line.replace("%" + placeholders[i] + "%", placeholders[i + 1]);
             }
-            compLore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(line)
+            compLore.add(com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(line)
                     .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
         }
         builder.lore(compLore);
@@ -79,6 +79,6 @@ public class GuiConfigManager {
     }
 
     private String colorize(String str) {
-        return str.replace("&", "§");
+        return str.replace("&", "§"); // Only used for getString
     }
 }

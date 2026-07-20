@@ -66,19 +66,19 @@ public enum Messages {
         return path;
     }
 
-    public String get() {
+    public net.kyori.adventure.text.Component get() {
         return PkCinematics.getApi().getMessageManager().getMessage(path);
     }
 
-    public String get(Object... replacements) {
+    public net.kyori.adventure.text.Component get(Object... replacements) {
         return PkCinematics.getApi().getMessageManager().getMessage(path, replacements);
     }
     
-    public String getWithPrefix() {
-        return PREFIX.get() + get();
+    public net.kyori.adventure.text.Component getWithPrefix() {
+        return PREFIX.get().appendSpace().append(get());
     }
     
-    public String getWithPrefix(Object... replacements) {
-        return PREFIX.get() + get(replacements);
+    public net.kyori.adventure.text.Component getWithPrefix(Object... replacements) {
+        return PREFIX.get().appendSpace().append(get(replacements));
     }
 }

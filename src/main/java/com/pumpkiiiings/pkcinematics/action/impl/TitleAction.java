@@ -25,8 +25,8 @@ public class TitleAction implements PkAction {
     @Override
     public void execute(ActionContext context) {
         Player player = context.getPlayer();
-        String parsedTitle = this.title != null ? this.title.replace("&", "§") : "";
-        String parsedSubtitle = this.subtitle != null ? this.subtitle.replace("&", "§") : "";
+        String parsedTitle = this.title != null ? this.title : "";
+        String parsedSubtitle = this.subtitle != null ? this.subtitle : "";
 
         // Basic placeholder replacing
         for (Map.Entry<String, Object> entry : context.getVariables().entrySet()) {
@@ -36,7 +36,18 @@ public class TitleAction implements PkAction {
             parsedSubtitle = parsedSubtitle.replace(key, value);
         }
 
-        player.sendTitle(parsedTitle, parsedSubtitle, fadeIn, stay, fadeOut);
+        net.kyori.adventure.title.Title.Times times = net.kyori.adventure.title.Title.Times.times(
+            net.kyori.adventure.util.Ticks.duration(fadeIn),
+            net.kyori.adventure.util.Ticks.duration(stay),
+            net.kyori.adventure.util.Ticks.duration(fadeOut)
+        );
+        net.kyori.adventure.title.Title titleObj = net.kyori.adventure.title.Title.title(
+            com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(parsedTitle),
+            com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(parsedSubtitle),
+            times
+        );
+
+        player.showTitle(titleObj);
     }
 
     @Override

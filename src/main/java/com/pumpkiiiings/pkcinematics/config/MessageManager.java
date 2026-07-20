@@ -6,7 +6,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
+import com.pumpkiiiings.pkcinematics.core.FormatUtils;
 
 public class MessageManager {
     
@@ -27,15 +28,15 @@ public class MessageManager {
         this.config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public String getMessage(String path) {
+    public Component getMessage(String path) {
         String msg = config.getString(path);
-        if (msg == null) return "§cMessage not found: " + path;
-        return format(msg);
+        if (msg == null) return FormatUtils.parse("&cMessage not found: " + path);
+        return FormatUtils.parse(msg);
     }
     
-    public String getMessage(String path, Object... replacements) {
+    public Component getMessage(String path, Object... replacements) {
         String msg = config.getString(path);
-        if (msg == null) return "§cMessage not found: " + path;
+        if (msg == null) return FormatUtils.parse("&cMessage not found: " + path);
         
         for (int i = 0; i < replacements.length; i += 2) {
             if (i + 1 < replacements.length) {
@@ -44,16 +45,6 @@ public class MessageManager {
                 msg = msg.replace("{" + key + "}", value);
             }
         }
-        return format(msg);
-    }
-
-    private String format(String text) {
-        // Usa Kyori Adventure para parsear colores &, incluyendo hex (&#rrggbb)
-        net.kyori.adventure.text.Component comp = LegacyComponentSerializer.builder()
-                .character('&')
-                .hexColors()
-                .build()
-                .deserialize(text);
-        return LegacyComponentSerializer.legacySection().serialize(comp);
+        return FormatUtils.parse(msg);
     }
 }

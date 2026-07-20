@@ -20,13 +20,13 @@ public class MessageAction implements PkAction {
     @Override
     public void execute(ActionContext context) {
         Player player = context.getPlayer();
-        String parsedText = this.text != null ? this.text.replace("&", "§") : "";
+        String parsedText = this.text != null ? this.text : "";
 
         for (Map.Entry<String, Object> entry : context.getVariables().entrySet()) {
             parsedText = parsedText.replace("%" + entry.getKey() + "%", String.valueOf(entry.getValue()));
         }
 
-        player.sendMessage(parsedText);
+        player.sendMessage(com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(parsedText));
     }
 
     @Override

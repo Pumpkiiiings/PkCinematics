@@ -177,11 +177,16 @@ public class DefaultPlayerStateRestorer implements PlayerStateRestorer {
             file.delete();
             
             MessageManager msg = PkCinematics.getApi().getMessageManager();
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("state_restored"));
+            player.sendMessage(msg.getMessage("prefix").appendSpace().append(msg.getMessage("state_restored")));
         } catch (Exception e) {
-            e.printStackTrace();
-            MessageManager msg = PkCinematics.getApi().getMessageManager();
-            player.sendMessage(msg.getMessage("prefix") + msg.getMessage("state_restore_error"));
+            handleRestoreError(player, e);
+        }
+    }
+
+    private void handleRestoreError(Player player, Exception e) {
+        MessageManager msg = PkCinematics.getApi().getMessageManager();
+        if (player.isOnline()) {
+            player.sendMessage(msg.getMessage("prefix").appendSpace().append(msg.getMessage("state_restore_error")));
         }
     }
 }
