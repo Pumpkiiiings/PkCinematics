@@ -52,6 +52,15 @@ public class KeyframesListGui {
                 if (event.getClick() == ClickType.LEFT) {
                     KeyframeEditorGui.open(player, session, kf, currentIndex);
                 } else if (event.getClick() == ClickType.RIGHT) {
+                    org.bukkit.World world = org.bukkit.Bukkit.getWorld(kf.getWorldName());
+                    if (world != null) {
+                        Location loc = new Location(world, kf.getX(), kf.getY(), kf.getZ(), kf.getYaw(), kf.getPitch());
+                        player.teleportAsync(loc);
+                        player.sendMessage("§aTeletransportado al punto #" + currentIndex);
+                    } else {
+                        player.sendMessage("§cEl mundo de este keyframe no existe o no está cargado.");
+                    }
+                } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                     track.removeKeyframe(kf);
                     session.getCinematic().getTimeline().calculateDuration();
                     open(player, session); // Refresh

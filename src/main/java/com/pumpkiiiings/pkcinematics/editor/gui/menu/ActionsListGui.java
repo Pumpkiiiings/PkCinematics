@@ -38,6 +38,14 @@ public class ActionsListGui {
                 
                 GuiItem guiItem = itemBuilder.asGuiItem(event -> {
                     if (event.getClick() == ClickType.RIGHT) {
+                        com.pumpkiiiings.pkcinematics.api.action.ActionContext ctx = new com.pumpkiiiings.pkcinematics.api.action.ActionContext() {
+                            @Override public Player getPlayer() { return player; }
+                            @Override public com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession getPlaybackSession() { return null; }
+                            @Override public java.util.Map<String, Object> getVariables() { return java.util.Collections.emptyMap(); }
+                        };
+                        action.execute(ctx);
+                        player.sendMessage("§a[PkCinematics] Previsualizando acción...");
+                    } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                         track.removeAction(tick, action);
                         session.getCinematic().getTimeline().calculateDuration();
                         open(player, session); // Refresh

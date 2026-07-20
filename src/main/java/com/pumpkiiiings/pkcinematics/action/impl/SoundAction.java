@@ -31,13 +31,26 @@ public class SoundAction implements PkAction {
         Location loc = player.getLocation();
         
         try {
-            // Try to parse as native Bukkit Sound Enum
-            Sound nativeSound = Sound.valueOf(soundKey.toUpperCase());
-            player.playSound(loc, nativeSound, volume, pitch);
+            if (Sound.class.isEnum()) {
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                Class rawClass = Sound.class;
+                @SuppressWarnings("unchecked")
+                Sound nativeSound = (Sound) Enum.valueOf(rawClass, soundKey.toUpperCase());
+                player.playSound(loc, nativeSound, volume, pitch);
+                return;
+            } else {
+                // 1.21.3+ fallback, soundKey might be enum style, we attempt to convert to key style
+                String mapped = soundKey.toLowerCase().replace("_", ".");
+                // Try playing the mapped string directly, which natively accepts keys like "entity.player.levelup"
+                player.playSound(loc, mapped, volume, pitch);
+                return;
+            }
         } catch (IllegalArgumentException e) {
             // It's a custom sound (from a ResourcePack)
-            player.playSound(loc, soundKey.toLowerCase(), volume, pitch);
+        } catch (Throwable e) {
+            // Fallback for unexpected errors
         }
+        player.playSound(loc, soundKey.toLowerCase(), volume, pitch);
     }
 
     @Override

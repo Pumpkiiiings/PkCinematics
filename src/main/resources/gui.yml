@@ -111,7 +111,8 @@ keyframes_list:
       - "&7Aceleración: &f%easing%"
       - ""
       - "&a► Clic Izquierdo para Editar"
-      - "&c► Clic Derecho para Eliminar"
+      - "&e► Clic Derecho para Ir"
+      - "&c► Q (Soltar) para Eliminar"
 
 # =================
 # Editor de Keyframe
@@ -187,7 +188,8 @@ actions_list:
     lore:
       - "&7Tick: &f%tick%"
       - ""
-      - "&c► Clic Derecho para Eliminar"
+      - "&e► Clic Derecho para Previsualizar"
+      - "&c► Q (Soltar) para Eliminar"
 
 # =================
 # Selector de Acción

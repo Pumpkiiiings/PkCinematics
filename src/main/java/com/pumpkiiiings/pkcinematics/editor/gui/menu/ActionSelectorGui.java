@@ -29,12 +29,16 @@ public class ActionSelectorGui {
         // Title
         GuiItem titleItem = config.getItemBuilder("action_selector.items.title").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
-                api.getChatInputManager().requestInput(player, "§aEscribe el título:", text -> {
-                    TitleAction action = new TitleAction(text, "", 10, 60, 10);
-                    session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
-                    session.getCinematic().getTimeline().calculateDuration();
-                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Title", "tick", String.valueOf(tick)));
-                    ActionsListGui.open(player, session);
+                api.getChatInputManager().requestInput(player, "§aEscribe el título (o 'none' para dejar vacío):", titleInput -> {
+                    api.getChatInputManager().requestInput(player, "§aEscribe el subtítulo (o 'none' para dejar vacío):", subtitleInput -> {
+                        String t = titleInput.equalsIgnoreCase("none") ? "" : titleInput;
+                        String s = subtitleInput.equalsIgnoreCase("none") ? "" : subtitleInput;
+                        TitleAction action = new TitleAction(t, s, 10, 60, 10);
+                        session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
+                        session.getCinematic().getTimeline().calculateDuration();
+                        player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Title", "tick", String.valueOf(tick)));
+                        ActionsListGui.open(player, session);
+                    });
                 });
             });
         });
@@ -85,16 +89,31 @@ public class ActionSelectorGui {
         // Time
         GuiItem timeItem = config.getItemBuilder("action_selector.items.time").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
-                api.getChatInputManager().requestInput(player, "§aEscribe el valor del tiempo (ej. 6000 para mediodía):", text -> {
-                    try {
-                        long t = Long.parseLong(text);
-                        TimeAction action = new TimeAction(t);
-                        session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
-                        session.getCinematic().getTimeline().calculateDuration();
-                        player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Time", "tick", String.valueOf(tick)));
-                    } catch (Exception ex) {
-                        player.sendMessage(Messages.EDITOR_INVALID_NUMBER.getWithPrefix());
+                api.getChatInputManager().requestInput(player, "§aEscribe el tiempo (ej. day, night, noon, midnight, o en ticks como 6000):", text -> {
+                    long t = 0;
+                    switch(text.toLowerCase()) {
+                        case "day": t = 1000; break;
+                        case "noon": 
+                        case "afternoon": t = 6000; break;
+                        case "sunset": 
+                        case "dusk": t = 12000; break;
+                        case "night": t = 13000; break;
+                        case "midnight": t = 18000; break;
+                        case "sunrise": 
+                        case "dawn": t = 23000; break;
+                        default:
+                            try {
+                                t = Long.parseLong(text);
+                            } catch (Exception ex) {
+                                player.sendMessage("§cValor inválido, usando 0 (alba).");
+                                t = 0;
+                            }
+                            break;
                     }
+                    TimeAction action = new TimeAction(t);
+                    session.getCinematic().getTimeline().getActionTrack().addAction(tick, action);
+                    session.getCinematic().getTimeline().calculateDuration();
+                    player.sendMessage(Messages.EDITOR_ACTION_ADDED.getWithPrefix("type", "Time", "tick", String.valueOf(tick)));
                     ActionsListGui.open(player, session);
                 });
             });
