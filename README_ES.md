@@ -49,8 +49,8 @@ Todos los comandos requieren el permiso `pkcinematics.admin`. Los jugadores norm
 
 Para una explicación detallada sobre los triggers, condiciones, tipos de acciones y el formato YAML, ¡revisa la documentación en la carpeta `/docs`!
 
-- [English Documentation](./docs/README.md)
-- [Documentación en Español](./docs/README_ES.md)
+- [English Documentation](./docs_en/README.md)
+- [Documentación en Español](./docs_es/README.md)
 
 ---
 *Creado por Pumpkiiiings*
