@@ -80,7 +80,6 @@ tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
     // Exclude PacketEvents entirely — provided by the server
     exclude 'com/github/retrooper/**'
     exclude 'io/github/retrooper/**'
-    exclude 'net/kyori/**'
 
     relocate 'dev.triumphteam.gui', 'com.pumpkiiiings.pkcinematics.libs.triumphgui'
 
