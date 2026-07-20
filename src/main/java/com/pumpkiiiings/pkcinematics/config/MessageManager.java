@@ -6,8 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class MessageManager {
     
@@ -49,14 +48,12 @@ public class MessageManager {
     }
 
     private String format(String text) {
-        // Soporte básico para colores & y Hex (&#RRGGBB)
-        Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
-        Matcher matcher = pattern.matcher(text);
-        while (matcher.find()) {
-            String color = text.substring(matcher.start(), matcher.end());
-            text = text.replace(color, net.md_5.bungee.api.ChatColor.of(color.replace("&", "")) + "");
-            matcher = pattern.matcher(text);
-        }
-        return ChatColor.translateAlternateColorCodes('&', text);
+        // Usa Kyori Adventure para parsear colores &, incluyendo hex (&#rrggbb)
+        net.kyori.adventure.text.Component comp = LegacyComponentSerializer.builder()
+                .character('&')
+                .hexColors()
+                .build()
+                .deserialize(text);
+        return LegacyComponentSerializer.legacySection().serialize(comp);
     }
 }

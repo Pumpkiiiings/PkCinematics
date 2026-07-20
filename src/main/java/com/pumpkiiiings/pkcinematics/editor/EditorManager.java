@@ -9,8 +9,7 @@ import com.pumpkiiiings.pkcinematics.config.MessageManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class EditorManager {
     
@@ -31,7 +30,7 @@ public class EditorManager {
                     int points = cin.getTimeline().getCameraTrack().getKeyframes().size();
                     int duration = cin.getTimeline().getDurationTicks();
                     String msg = "§eCinemática: §f" + cin.getId() + " §8| §ePuntos: §f" + points + " §8| §eDuración: §f" + duration + " ticks §8| §cSin guardar";
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
+                    player.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(msg));
                 }
             }
         }, 20L, 20L);
