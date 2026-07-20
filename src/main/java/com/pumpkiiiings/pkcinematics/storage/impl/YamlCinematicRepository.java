@@ -151,7 +151,9 @@ public class YamlCinematicRepository implements CinematicRepository {
             List<PkAction> actionsAtTick = cinematic.getTimeline().getActionTrack().getActionsAt(tick);
             List<Map<String, Object>> serializedActions = new ArrayList<>();
             for (PkAction act : actionsAtTick) {
-                serializedActions.add(act.serialize());
+                Map<String, Object> serialized = new HashMap<>(act.serialize());
+                serialized.put("type", act.getType());
+                serializedActions.add(serialized);
             }
             if (!serializedActions.isEmpty()) {
                 config.set("actions." + tick, serializedActions);
