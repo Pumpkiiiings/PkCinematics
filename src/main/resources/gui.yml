@@ -140,8 +140,10 @@ keyframe_edit:
       lore:
         - "&7Valor actual: &f%value%"
         - ""
+        - "%opt_linear%"
+        - "%opt_catmull_rom%"
+        - ""
         - "&a► Clic para alternar valores"
-        - "&8(LINEAR, CATMULL_ROM)"
         
     easing:
       material: "RABBIT_FOOT"
@@ -149,8 +151,21 @@ keyframe_edit:
       lore:
         - "&7Valor actual: &f%value%"
         - ""
+        - "%opt_linear%"
+        - "%opt_ease_in%"
+        - "%opt_ease_out%"
+        - "%opt_smooth%"
+        - ""
         - "&a► Clic para alternar valores"
-        - "&8(LINEAR, EASE_IN, EASE_OUT, SMOOTH)"
+
+    waiting:
+      material: "CLOCK"
+      name: "&eAñadir Espera (Waiting)"
+      lore:
+        - "&7Añade ticks extra en este punto"
+        - "&7antes de que la cámara continúe."
+        - ""
+        - "&a► Clic para escribir ticks"
 
 # =================
 # Lista de Acciones

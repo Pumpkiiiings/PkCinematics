@@ -60,7 +60,9 @@ public class GuiConfigManager {
             name = name.replace("%" + placeholders[i] + "%", placeholders[i + 1]);
         }
         
-        ItemBuilder builder = ItemBuilder.from(material).name(LegacyComponentSerializer.legacyAmpersand().deserialize(name));
+        Component nameComp = LegacyComponentSerializer.legacyAmpersand().deserialize(name)
+                .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
+        ItemBuilder builder = ItemBuilder.from(material).name(nameComp);
         
         List<String> lore = config.getStringList(path + ".lore");
         List<Component> compLore = new ArrayList<>();
@@ -68,7 +70,8 @@ public class GuiConfigManager {
             for (int i = 0; i < placeholders.length; i += 2) {
                 line = line.replace("%" + placeholders[i] + "%", placeholders[i + 1]);
             }
-            compLore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(line));
+            compLore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(line)
+                    .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
         }
         builder.lore(compLore);
         
