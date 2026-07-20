@@ -98,7 +98,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.cinematicManager = new CinematicManagerImpl();
         this.stateRestorer = new DefaultPlayerStateRestorer(this);
         this.playbackManager = new PlaybackManagerImpl(this.cinematicScheduler, this.stateRestorer);
-        this.editorManager = new EditorManager();
+        this.editorManager = new EditorManager(this);
         
         // Load cinematics from disk
         for (Cinematic c : this.repository.loadAll()) {

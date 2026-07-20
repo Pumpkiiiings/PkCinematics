@@ -48,7 +48,7 @@ public class CinematicCommand implements BasicCommand {
         if (args.length == 0) {
             player.sendMessage(msg.getMessage("help_header"));
             player.sendMessage(msg.getMessage("help_create"));
-            player.sendMessage(msg.getMessage("help_edit"));
+            player.sendMessage("§e/cinematic edit §7- Abre el menú de edición");
             player.sendMessage(msg.getMessage("help_point"));
             player.sendMessage(msg.getMessage("help_point_edit"));
             player.sendMessage(msg.getMessage("help_actions"));
@@ -74,13 +74,14 @@ public class CinematicCommand implements BasicCommand {
             Cinematic cin = new Cinematic(id);
             PkCinematics.getApi().getCinematicManager().registerCinematic(cin);
             editorManager.startEditing(player, cin);
+            player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
             MainEditorGui.open(player, editorManager.getSession(player));
             return;
         }
 
-        if (sub.equals("edit")) {
+        if (sub.equals("edit") || sub.equals("menu")) {
             if (args.length < 2) {
-                player.sendMessage(msg.getMessage("prefix") + msg.getMessage("help_edit"));
+                com.pumpkiiiings.pkcinematics.editor.gui.menu.CinematicListGui.open(player);
                 return;
             }
             String id = args[1];
@@ -175,6 +176,7 @@ public class CinematicCommand implements BasicCommand {
             session.getCinematic().getTimeline().calculateDuration();
             
             int index = track.getKeyframes().indexOf(kf);
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.2f);
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("editor_point_added", "index", index, "tick", newTick));
             return;
         }
@@ -186,6 +188,7 @@ public class CinematicCommand implements BasicCommand {
                 return;
             }
             repository.save(session.getCinematic());
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
             player.sendMessage(msg.getMessage("prefix") + msg.getMessage("saved", "name", session.getCinematic().getId()));
             editorManager.stopEditing(player);
             return;
@@ -289,7 +292,7 @@ public class CinematicCommand implements BasicCommand {
         List<String> results = new ArrayList<>();
         
         if (args.length == 1) {
-            for (String s : new String[]{"create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug"}) {
+            for (String s : new String[]{"menu", "create", "edit", "point", "actions", "save", "play", "stop", "reload", "debug"}) {
                 if (s.toLowerCase().startsWith(args[0].toLowerCase())) results.add(s);
             }
             return results;

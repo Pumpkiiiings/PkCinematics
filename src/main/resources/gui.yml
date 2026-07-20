@@ -3,7 +3,30 @@
 # ==========================================
 
 # =================
-# Menú Principal
+# Lista de Cinemáticas (Menú Principal)
+# =================
+cinematics_list:
+  title: "&8Lista de Cinemáticas"
+  create_btn:
+    material: "EMERALD"
+    name: "&aCrear Nueva Cinemática"
+    lore:
+      - "&7Haz clic para crear una nueva"
+      - "&7cinemática mediante el chat."
+      - ""
+      - "&e► Clic para crear"
+  item:
+    material: "PAINTING"
+    name: "&d%id%"
+    lore:
+      - "&7Duración: &f%duration% ticks"
+      - "&7Puntos: &f%keyframes%"
+      - "&7Acciones: &f%actions%"
+      - ""
+      - "&a► Clic para Editar"
+
+# =================
+# Menú Principal (Edición)
 # =================
 main:
   title: "&8Editando: &d%cinematic%"
