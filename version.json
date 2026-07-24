@@ -1,8 +1,8 @@
 {
-  "version": "1.7",
+  "version": "1.7.1",
   "message": [
     "<gradient:#f4c4f3:#fc67fa>A new version of PkCinematics is available!</gradient>",
-    "<gray>The console can now execute commands and the plugin is fully translated to English.</gray>",
+    "<gray>This version adds WorldGuard and MythicMobs integrations, run-once triggers, and target selectors.</gray>",
     "<click:open_url:'https://github.com/Pumpkiiiings/PkCinematics/releases'><hover:show_text:'<green>Click to go to GitHub</green>'><yellow><u>Click here to download it from GitHub</u></yellow></hover></click>"
   ],
   "important": true
