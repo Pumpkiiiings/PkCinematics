@@ -23,6 +23,14 @@ repositories {
     maven {
         url = "https://repo.codemc.io/repository/maven-snapshots/"
     }
+    maven {
+        name = "lumine"
+        url = "https://mvn.lumine.io/repository/maven-public/"
+    }
+    maven {
+        name = "enginehub"
+        url = "https://maven.enginehub.org/repo/"
+    }
 }
 
 dependencies {
@@ -34,6 +42,12 @@ dependencies {
     
     // Triumph GUI
     implementation 'dev.triumphteam:triumph-gui:3.1.13'
+
+    // WorldGuard API
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9'
+
+    // MythicMobs API
+    compileOnly 'io.lumine:Mythic-Dist:5.12.1'
 }
 
 def targetJavaVersion = 21

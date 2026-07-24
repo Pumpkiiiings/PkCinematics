@@ -46,6 +46,9 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 import com.pumpkiiiings.pkcinematics.core.UpdateChecker;
 import com.pumpkiiiings.pkcinematics.listener.UpdateListener;
+import com.pumpkiiiings.pkcinematics.condition.impl.RegionCondition;
+import com.pumpkiiiings.pkcinematics.integration.WGIntegration;
+import com.pumpkiiiings.pkcinematics.integration.MythicMobsIntegration;
 
 import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.gui.ChatInputManager;
@@ -129,6 +132,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.conditionRegistry.registerCondition("world", WorldCondition.class);
         this.conditionRegistry.registerCondition("gamemode", GamemodeCondition.class);
         this.conditionRegistry.registerCondition("played_before", PlayedBeforeCondition.class);
+        this.conditionRegistry.registerCondition("region", RegionCondition.class);
         
         // Register default trigger types
         this.triggerRegistry.registerTriggerType("first_join");
@@ -139,6 +143,8 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.triggerRegistry.registerTriggerType("world_change");
         this.triggerRegistry.registerTriggerType("resource_pack_loaded");
         this.triggerRegistry.registerTriggerType("resource_pack_declined");
+        this.triggerRegistry.registerTriggerType("region_enter");
+        this.triggerRegistry.registerTriggerType("mythicmobs_spawn");
         
         // Load triggers
         this.triggerManager.loadAll();
@@ -153,6 +159,14 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         getServer().getPluginManager().registerEvents(this.chatInputManager, this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSkipCinematicListener(), this);
+        
+        // Integrations
+        if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+            WGIntegration.registerHandler();
+        }
+        if (getServer().getPluginManager().getPlugin("MythicMobs") != null) {
+            MythicMobsIntegration.register();
+        }
         
         // Update Checker
         if (getConfig().getBoolean("update-checker.enabled", true)) {

@@ -9,3 +9,9 @@ dependencies:
     packetevents:
       load: BEFORE
       required: true
+    WorldGuard:
+      load: BEFORE
+      required: false
+    MythicMobs:
+      load: BEFORE
+      required: false

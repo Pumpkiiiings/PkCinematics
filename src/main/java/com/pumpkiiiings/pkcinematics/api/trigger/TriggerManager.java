@@ -61,6 +61,16 @@ public class TriggerManager {
                 logger.warning("No trigger type defined in " + file.getName());
                 continue;
             }
+            
+            boolean runOnce = triggerSec.getBoolean("run-once", false);
+            String target = triggerSec.getString("target", "@trigger");
+            
+            java.util.Map<String, String> properties = new java.util.HashMap<>();
+            for (String key : triggerSec.getKeys(false)) {
+                if (!key.equals("type") && !key.equals("run-once") && !key.equals("target")) {
+                    properties.put(key, triggerSec.getString(key));
+                }
+            }
 
             // Conditions
             List<Condition> conditions = new ArrayList<>();
@@ -124,7 +134,7 @@ public class TriggerManager {
                 }
             }
 
-            PkTrigger trigger = new PkTrigger(id, type, conditions, actions);
+            PkTrigger trigger = new PkTrigger(id, type, conditions, actions, runOnce, target, properties);
             List<PkTrigger> list = triggersByType.get(type.toLowerCase());
             if (list == null) {
                 list = new ArrayList<>();
@@ -135,31 +145,96 @@ public class TriggerManager {
         }
     }
 
-    /**
-     * Fires a trigger type for a specific player.
-     * @param type The type of trigger (e.g. "first_join")
-     * @param player The player
-     */
     public void fire(String type, Player player) {
+        fire(type, player, player != null ? player.getLocation() : null);
+    }
+    
+    public void fire(String type, org.bukkit.Location location) {
+        fire(type, null, location);
+    }
+
+    public void fire(String type, Player player, org.bukkit.Location location) {
         List<PkTrigger> triggers = triggersByType.get(type.toLowerCase());
         if (triggers == null) return;
 
         for (PkTrigger trigger : triggers) {
+            fireTrigger(trigger, player, location);
+        }
+    }
+    
+    public List<PkTrigger> getTriggers(String type) {
+        return triggersByType.get(type.toLowerCase());
+    }
+    
+    public void fireTrigger(PkTrigger trigger, Player triggerPlayer, org.bukkit.Location location) {
+        List<Player> targets = resolveTargets(trigger.getTarget(), triggerPlayer, location);
+        
+        for (Player targetPlayer : targets) {
+            if (trigger.isRunOnce() && hasRunOnce(targetPlayer, trigger.getId())) {
+                continue;
+            }
+
             boolean conditionsMet = true;
             for (Condition condition : trigger.getConditions()) {
-                if (!condition.test(player)) {
+                if (!condition.test(targetPlayer)) {
                     conditionsMet = false;
                     break;
                 }
             }
 
             if (conditionsMet) {
-                ActionContext context = new SimpleActionContext(player, null);
+                if (trigger.isRunOnce()) {
+                    markRunOnce(targetPlayer, trigger.getId());
+                }
+                ActionContext context = new SimpleActionContext(targetPlayer, null);
                 for (PkAction action : trigger.getActions()) {
                     action.execute(context);
                 }
             }
         }
+    }
+    
+    private List<Player> resolveTargets(String targetStr, Player triggerPlayer, org.bukkit.Location location) {
+        List<Player> list = new ArrayList<>();
+        if (targetStr == null) return list;
+        
+        targetStr = targetStr.toLowerCase();
+        
+        if (targetStr.equals("@trigger")) {
+            if (triggerPlayer != null) list.add(triggerPlayer);
+        } else if (targetStr.equals("@all")) {
+            list.addAll(org.bukkit.Bukkit.getOnlinePlayers());
+        } else if (targetStr.startsWith("@world:")) {
+            String worldName = targetStr.substring(7);
+            org.bukkit.World world = org.bukkit.Bukkit.getWorld(worldName);
+            if (world != null) {
+                list.addAll(world.getPlayers());
+            }
+        } else if (targetStr.startsWith("@radius:")) {
+            try {
+                double radius = Double.parseDouble(targetStr.substring(8));
+                if (location != null) {
+                    for (Player p : location.getWorld().getPlayers()) {
+                        if (p.getLocation().distanceSquared(location) <= radius * radius) {
+                            list.add(p);
+                        }
+                    }
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        return list;
+    }
+    
+    private boolean hasRunOnce(Player player, String triggerId) {
+        org.bukkit.persistence.PersistentDataContainer pdc = player.getPersistentDataContainer();
+        org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey((org.bukkit.plugin.Plugin) PkCinematics.getApi(), "trigger_" + triggerId.toLowerCase());
+        return pdc.has(key, org.bukkit.persistence.PersistentDataType.BYTE);
+    }
+
+    private void markRunOnce(Player player, String triggerId) {
+        org.bukkit.persistence.PersistentDataContainer pdc = player.getPersistentDataContainer();
+        org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey((org.bukkit.plugin.Plugin) PkCinematics.getApi(), "trigger_" + triggerId.toLowerCase());
+        pdc.set(key, org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
     }
 
     public int getLoadedTriggersCount() {
