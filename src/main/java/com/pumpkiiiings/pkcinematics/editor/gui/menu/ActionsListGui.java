@@ -44,7 +44,7 @@ public class ActionsListGui {
                             @Override public java.util.Map<String, Object> getVariables() { return java.util.Collections.emptyMap(); }
                         };
                         action.execute(ctx);
-                        player.sendMessage("§a[PkCinematics] Previsualizando acción...");
+                        player.sendMessage("§a[PkCinematics] Previewing action...");
                     } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                         track.removeAction(tick, action);
                         session.getCinematic().getTimeline().calculateDuration();

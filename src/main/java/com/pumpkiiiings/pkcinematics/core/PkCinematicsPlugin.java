@@ -44,6 +44,8 @@ import com.pumpkiiiings.pkcinematics.listener.PlayerSkipCinematicListener;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
+import com.pumpkiiiings.pkcinematics.core.UpdateChecker;
+import com.pumpkiiiings.pkcinematics.listener.UpdateListener;
 
 import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.gui.ChatInputManager;
@@ -65,6 +67,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
 
     private GuiConfigManager guiConfigManager;
     private ChatInputManager chatInputManager;
+    private UpdateChecker updateChecker;
 
     @Override
     public void onLoad() {
@@ -79,6 +82,9 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     @Override
     public void onEnable() {
         PacketEvents.getAPI().init();
+        
+        // Load default config.yml
+        saveDefaultConfig();
         
         // Register API provider
         PkCinematicsProvider.register(this);
@@ -147,6 +153,16 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         getServer().getPluginManager().registerEvents(this.chatInputManager, this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSkipCinematicListener(), this);
+        
+        // Update Checker
+        if (getConfig().getBoolean("update-checker.enabled", true)) {
+            String url = "https://raw.githubusercontent.com/Pumpkiiiings/PkCinematics/main/version.json";
+            this.updateChecker = new UpdateChecker(this, url);
+            this.updateChecker.check();
+            if (getConfig().getBoolean("update-checker.on-join-notification", true)) {
+                getServer().getPluginManager().registerEvents(new UpdateListener(this.updateChecker), this);
+            }
+        }
         
         int cinematicsCount = PkCinematics.getApi().getCinematicManager().getAllCinematics().size();
         int triggersCount = this.triggerManager.getLoadedTriggersCount();

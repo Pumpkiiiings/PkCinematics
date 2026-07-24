@@ -27,7 +27,7 @@ public class EditorManager {
                     Cinematic cin = entry.getValue().getCinematic();
                     int points = cin.getTimeline().getCameraTrack().getKeyframes().size();
                     int duration = cin.getTimeline().getDurationTicks();
-                    String msg = "§eCinemática: §f" + cin.getId() + " §8| §ePuntos: §f" + points + " §8| §eDuración: §f" + duration + " ticks §8| §cSin guardar";
+                    String msg = "§eCinematic: §f" + cin.getId() + " §8| §ePoints: §f" + points + " §8| §eDuration: §f" + duration + " ticks §8| §cUnsaved";
                     player.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(msg));
                 }
             }

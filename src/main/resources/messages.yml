@@ -1,71 +1,65 @@
 prefix: "&8[&ePkCinematics&8] &r"
 
-# Mensajes Generales
-no_permission: "&cNo tienes permisos."
-already_exists: "&cEsa cinemática ya existe."
-not_found: "&cCinemática no encontrada."
-saved: "&aCinemática '{name}' guardada en disco."
+# General Messages
+no_permission: "&cYou don't have permission."
+already_exists: "&cThat cinematic already exists."
+not_found: "&cCinematic not found."
+saved: "&aCinematic '{name}' saved to disk."
 
 # Editor
-editor_start: "&aAhora estás editando la cinemática: &e{name}"
-editor_stop: "&aHas cerrado el editor de: &e{name}"
-editor_not_editing: "&cNo estás editando ninguna cinemática. Usa /cinematic edit <nombre>"
-editor_point_added: "&aPunto añadido (Índice: &e{index}&a, Tick: &e{tick}&a)"
-editor_invalid_index: "&cÍndice inválido."
-editor_invalid_property: "&cPropiedad no válida."
-editor_tick_updated: "&aTick actualizado a &e{value}"
-editor_fov_updated: "&aFOV actualizado a &e{value}"
-editor_interp_updated: "&aInterpolación actualizada a &e{value}"
+editor_start: "&aYou are now editing the cinematic: &e{name}"
+editor_stop: "&aYou have closed the editor for: &e{name}"
+editor_not_editing: "&cYou are not editing any cinematic. Use /cinematic edit <name>"
+editor_point_added: "&aPoint added (Index: &e{index}&a, Tick: &e{tick}&a)"
+editor_invalid_index: "&cInvalid index."
+editor_invalid_property: "&cInvalid property."
+editor_tick_updated: "&aTick updated to &e{value}"
+editor_fov_updated: "&aFOV updated to &e{value}"
+editor_interp_updated: "&aInterpolation updated to &e{value}"
+editor_invalid_number: "&cPlease enter a valid number."
+editor_invalid_decimal: "&cPlease enter a valid decimal number."
+editor_invalid_wait_ticks: "&cWait ticks must be greater than 0."
+editor_wait_time_added: "&aAdded wait time of {ticks} ticks."
+editor_action_added: "&aAction {type} added at tick {tick}"
+editor_action_invalid_tick: "&cError: Enter a valid tick number (e.g. 100)."
 
 # GUI
 gui:
-  main_title: "&8Acciones - Tick: {tick}"
-  add_title: "&8Añadir Acción"
-  add_action_btn: "&aAñadir Acción"
-  action_item_name: "&eAcción: &6{type}"
+  main_title: "&8Actions - Tick: {tick}"
+  add_title: "&8Add Action"
+  add_action_btn: "&aAdd Action"
+  action_item_name: "&eAction: &6{type}"
   action_item_lore:
-    - "&7Haz clic derecho para eliminar."
-  add_title_btn: "&eAñadir TITLE"
+    - "&7Right-click to remove."
+  add_title_btn: "&eAdd TITLE"
   add_title_lore:
-    - "&7Haz clic para ingresar el título en el chat."
+    - "&7Click to enter the title in chat."
 
 # Chat Input
-chat_input_title: "&eEscribe el texto del Título en el chat (o 'cancelar' para abortar):"
-chat_input_cancelled: "&cOperación cancelada."
-chat_input_success: "&aAcción añadida al tick {tick}!"
-action_removed: "&aAcción eliminada."
+chat_input_title: "&eEnter the Title text in chat (or 'cancel' to abort):"
+chat_input_cancel_hint: "&7Type 'cancel' to exit."
+chat_input_cancelled: "&cOperation cancelled."
+chat_input_success: "&aAction added at tick {tick}!"
+action_removed: "&aAction removed."
 
 # Playback
-playback_playing: "&aReproduciendo..."
-playback_stopped: "&eReproducción detenida."
-state_restored: "&aTu estado ha sido restaurado tras un crash."
-state_restore_error: "&cError al restaurar estado de emergencia."
+playback_playing: "&aPlaying..."
+playback_stopped: "&ePlayback stopped."
+state_restored: "&aYour state has been restored after a crash."
+state_restore_error: "&cFailed to restore emergency state."
 
-# Ayuda
+# Help
 help_header: "&6--- PkCinematics ---"
-help_create: "&e/cinematic create <nombre>"
-help_edit: "&e/cinematic edit <nombre>"
+help_create: "&e/cinematic create <name>"
+help_edit: "&e/cinematic edit <name>"
 help_point: "&e/cinematic point"
-help_point_edit: "&e/cinematic point edit <index> <propiedad> <valor>"
+help_point_edit: "&e/cinematic point edit <index> <property> <value>"
 help_actions: "&e/cinematic actions <tick>"
 help_save: "&e/cinematic save"
-help_play: "&e/cinematic play <nombre>"
+help_play: "&e/cinematic play <name>"
 help_stop: "&e/cinematic stop"
-help_reload: "&e/cinematic reload <cinematics|triggers|messages|all> &7- Recarga configuraciones"
+help_reload: "&e/cinematic reload <cinematics|triggers|messages|all> &7- Reload configs"
 
-# Editor UI / Errores
-editor_invalid_number: "&cPor favor, escribe un número válido."
-editor_invalid_decimal: "&cPor favor, escribe un número decimal válido."
-editor_invalid_wait_ticks: "&cLos ticks de espera deben ser mayores a 0."
-editor_wait_time_added: "&aSe añadió un tiempo de espera de {ticks} ticks."
-
-# Acciones
-editor_action_added: "&aAcción {type} añadida en el tick {tick}"
-editor_action_invalid_tick: "&cError: Escribe un número de tick válido (ej. 100)."
-
-# Chat Input
-chat_input_cancel_hint: "&7Escribe 'cancelar' para salir."
-
-# Varios
-debug_action_executed: "&8[&cDebug&8] &eAcción &b{type} &eejecutada en tick &a{tick}"
-reloaded: "&aConfiguración de {type} recargada exitosamente."
+# Misc
+debug_action_executed: "&8[&cDebug&8] &eAction &b{type} &eexecuted at tick &a{tick}"
+reloaded: "&a{type} configuration reloaded successfully."

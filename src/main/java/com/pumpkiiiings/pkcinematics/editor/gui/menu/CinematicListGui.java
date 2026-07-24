@@ -51,11 +51,11 @@ public class CinematicListGui {
         
         // Add create button
         GuiItem createBtn = config.getItemBuilder("cinematics_list.create_btn").asGuiItem(e -> {
-            String prompt = Messages.PREFIX.get() + "§aEscribe el ID (nombre) para la nueva cinemática en el chat:";
+            String prompt = Messages.PREFIX.get() + "§aType the ID (name) for the new cinematic in chat:";
             api.getChatInputManager().requestInput(player, prompt, input -> {
                 String id = input.trim();
                 if (id.contains(" ")) {
-                    player.sendMessage(Messages.PREFIX.get() + "§cEl ID no puede contener espacios.");
+                    player.sendMessage(Messages.PREFIX.get() + "§cThe ID cannot contain spaces.");
                     return;
                 }
                 if (api.getCinematicManager().getCinematic(id) != null) {

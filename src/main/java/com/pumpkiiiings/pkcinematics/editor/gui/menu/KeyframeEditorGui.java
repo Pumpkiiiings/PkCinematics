@@ -28,7 +28,7 @@ public class KeyframeEditorGui {
         // Time (Tick)
         GuiItem timeItem = config.getItemBuilder("keyframe_edit.items.time", "value", String.valueOf(kf.getTick()))
                 .asGuiItem(event -> {
-                    api.getChatInputManager().requestInput(player, "§aEscribe el nuevo valor de TICK (tiempo):", input -> {
+                    api.getChatInputManager().requestInput(player, "§aType the new value for TICK (time):", input -> {
                         try {
                             int newTick = Integer.parseInt(input);
                             kf.setTick(newTick);
@@ -46,7 +46,7 @@ public class KeyframeEditorGui {
         // FOV
         GuiItem fovItem = config.getItemBuilder("keyframe_edit.items.fov", "value", String.valueOf(kf.getFov()))
                 .asGuiItem(event -> {
-                    api.getChatInputManager().requestInput(player, "§aEscribe el nuevo valor de FOV (zoom):", input -> {
+                    api.getChatInputManager().requestInput(player, "§aType the new value for FOV (zoom):", input -> {
                         try {
                             float newFov = Float.parseFloat(input);
                             kf.setFov(newFov);
@@ -62,7 +62,7 @@ public class KeyframeEditorGui {
         // Waiting
         GuiItem waitingItem = config.getItemBuilder("keyframe_edit.items.waiting", "value", "0")
                 .asGuiItem(event -> {
-                    api.getChatInputManager().requestInput(player, "§aEscribe los ticks que deseas esperar en este punto:", input -> {
+                    api.getChatInputManager().requestInput(player, "§aType the ticks you want to wait at this point:", input -> {
                         try {
                             int waitTicks = Integer.parseInt(input);
                             if (waitTicks <= 0) {

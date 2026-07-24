@@ -125,7 +125,7 @@ public class CinematicScheduler {
         
         // 4. Debug Action Bar
         if (((PlaybackManagerImpl)PkCinematics.getApi().getPlaybackManager()).isDebugEnabled(session.getPlayer())) {
-            String actionBar = "§eCinemática: §b" + session.getCinematic().getId() + " §8| §eTick: §a" + currentTick + " §8| §eSegundo: §a" + (currentTick / Double.parseDouble("20.0")) + "s";
+            String actionBar = "§eCinematic: §b" + session.getCinematic().getId() + " §8| §eTick: §a" + currentTick + " §8| §eSecond: §a" + (currentTick / Double.parseDouble("20.0")) + "s";
             session.getPlayer().sendActionBar(actionBar);
         }
 

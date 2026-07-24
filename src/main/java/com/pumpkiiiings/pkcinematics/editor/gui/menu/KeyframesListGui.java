@@ -56,9 +56,9 @@ public class KeyframesListGui {
                     if (world != null) {
                         Location loc = new Location(world, kf.getX(), kf.getY(), kf.getZ(), kf.getYaw(), kf.getPitch());
                         player.teleportAsync(loc);
-                        player.sendMessage("§aTeletransportado al punto #" + currentIndex);
+                        player.sendMessage("§aTeleported to point #" + currentIndex);
                     } else {
-                        player.sendMessage("§cEl mundo de este keyframe no existe o no está cargado.");
+                        player.sendMessage("§cThe world of this keyframe does not exist or is not loaded.");
                     }
                 } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                     track.removeKeyframe(kf);

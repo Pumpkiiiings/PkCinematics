@@ -35,29 +35,131 @@ public class CinematicCommand implements BasicCommand {
     @Override
     public void execute(CommandSourceStack stack, String[] args) {
         CommandSender sender = stack.getSender();
-        if (!(sender instanceof Player)) return;
-        Player player = (Player) sender;
         
-        if (!player.hasPermission("pkcinematics.admin")) {
-            player.sendMessage(Messages.NO_PERMISSION.getWithPrefix());
+        if (!sender.hasPermission("pkcinematics.admin")) {
+            sender.sendMessage(Messages.NO_PERMISSION.getWithPrefix());
             return;
         }
 
         if (args.length == 0) {
-            player.sendMessage(Messages.HELP_HEADER.get());
-            player.sendMessage(Messages.HELP_CREATE.get());
-            player.sendMessage(Messages.HELP_EDIT.get());
-            player.sendMessage(Messages.HELP_POINT.get());
-            player.sendMessage(Messages.HELP_POINT_EDIT.get());
-            player.sendMessage(Messages.HELP_ACTIONS.get());
-            player.sendMessage(Messages.HELP_SAVE.get());
-            player.sendMessage(Messages.HELP_PLAY.get());
-            player.sendMessage(Messages.HELP_STOP.get());
-            player.sendMessage(Messages.HELP_RELOAD.get());
+            sender.sendMessage(Messages.HELP_HEADER.get());
+            sender.sendMessage(Messages.HELP_CREATE.get());
+            sender.sendMessage(Messages.HELP_EDIT.get());
+            sender.sendMessage(Messages.HELP_POINT.get());
+            sender.sendMessage(Messages.HELP_POINT_EDIT.get());
+            sender.sendMessage(Messages.HELP_ACTIONS.get());
+            sender.sendMessage(Messages.HELP_SAVE.get());
+            sender.sendMessage(Messages.HELP_PLAY.get());
+            sender.sendMessage(Messages.HELP_STOP.get());
+            sender.sendMessage(Messages.HELP_RELOAD.get());
             return;
         }
 
         String sub = args[0].toLowerCase();
+        
+        // Commands allowed for console
+        if (sub.equals("play")) {
+            if (args.length < 2) {
+                sender.sendMessage(Messages.HELP_PLAY.getWithPrefix());
+                return;
+            }
+            String id = args[1];
+            Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
+            if (cin == null) {
+                sender.sendMessage(Messages.NOT_FOUND.getWithPrefix());
+                return;
+            }
+
+            if (args.length >= 3) {
+                String targetName = args[2];
+                if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
+                    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+                    PkCinematics.getApi().getPlaybackManager().play(onlinePlayers, cin);
+                    sender.sendMessage(Messages.PREFIX.get() + "§aPlaying cinematic " + id + " for all players.");
+                } else {
+                    Player target = Bukkit.getPlayer(targetName);
+                    if (target == null) {
+                        sender.sendMessage(Messages.PREFIX.get() + "§cPlayer not found: " + targetName);
+                        return;
+                    }
+                    PkCinematics.getApi().getPlaybackManager().play(target, cin);
+                    sender.sendMessage(Messages.PREFIX.get() + "§aPlaying cinematic " + id + " for " + target.getName() + ".");
+                }
+            } else {
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.PREFIX.get() + "§cYou must specify a player from the console. Example: /pkcinematics play <id> <player>");
+                    return;
+                }
+                Player player = (Player) sender;
+                PkCinematics.getApi().getPlaybackManager().play(player, cin);
+                sender.sendMessage(Messages.PLAYBACK_PLAYING.getWithPrefix());
+            }
+            return;
+        }
+
+        if (sub.equals("stop")) {
+            if (args.length >= 2) {
+                String targetName = args[1];
+                if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
+                    for (Player target : Bukkit.getOnlinePlayers()) {
+                        PkCinematics.getApi().getPlaybackManager().stop(target);
+                    }
+                    sender.sendMessage(Messages.PREFIX.get() + "§aCinematics stopped for all players.");
+                } else {
+                    Player target = Bukkit.getPlayer(targetName);
+                    if (target == null) {
+                        sender.sendMessage(Messages.PREFIX.get() + "§cPlayer not found: " + targetName);
+                        return;
+                    }
+                    PkCinematics.getApi().getPlaybackManager().stop(target);
+                    sender.sendMessage(Messages.PREFIX.get() + "§aCinematic stopped for " + target.getName() + ".");
+                }
+            } else {
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.PREFIX.get() + "§cYou must specify a player from the console. Example: /pkcinematics stop <player>");
+                    return;
+                }
+                Player player = (Player) sender;
+                PkCinematics.getApi().getPlaybackManager().stop(player);
+                sender.sendMessage(Messages.PLAYBACK_STOPPED.getWithPrefix());
+            }
+            return;
+        }
+        
+        if (sub.equals("reload")) {
+            if (args.length < 2) {
+                sender.sendMessage(Messages.HELP_RELOAD.getWithPrefix());
+                return;
+            }
+            String target = args[1].toLowerCase();
+            
+            if (target.equals("cinematics") || target.equals("all")) {
+                for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
+                    PkCinematics.getApi().getCinematicManager().unregisterCinematic(cin.getId());
+                }
+                for (Cinematic c : repository.loadAll()) {
+                    PkCinematics.getApi().getCinematicManager().registerCinematic(c);
+                }
+                sender.sendMessage(Messages.RELOADED.getWithPrefix("type", "Cinematics"));
+            }
+            if (target.equals("triggers") || target.equals("all")) {
+                PkCinematics.getApi().getTriggerManager().loadAll();
+                sender.sendMessage(Messages.RELOADED.getWithPrefix("type", "Triggers"));
+            }
+            if (target.equals("messages") || target.equals("all")) {
+                PkCinematics.getApi().getMessageManager().reload();
+                sender.sendMessage(Messages.RELOADED.getWithPrefix("type", "Messages"));
+            }
+            return;
+        }
+
+        // --- Commands requiring a Player ---
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Messages.PREFIX.get() + "§cThis command can only be executed by a player.");
+            return;
+        }
+        
+        Player player = (Player) sender;
 
         if (sub.equals("create")) {
             if (args.length < 2) {
@@ -202,80 +304,13 @@ public class CinematicCommand implements BasicCommand {
             return;
         }
         
-        if (sub.equals("play")) {
-            if (args.length < 2) {
-                player.sendMessage(Messages.HELP_PLAY.getWithPrefix());
-                return;
-            }
-            String id = args[1];
-            Cinematic cin = PkCinematics.getApi().getCinematicManager().getCinematic(id);
-            if (cin == null) {
-                player.sendMessage(Messages.NOT_FOUND.getWithPrefix());
-                return;
-            }
-
-            if (args.length >= 3) {
-                String targetName = args[2];
-                if (targetName.equalsIgnoreCase("all") || targetName.equalsIgnoreCase("todos") || targetName.equals("*")) {
-                    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-                    PkCinematics.getApi().getPlaybackManager().play(onlinePlayers, cin);
-                    // player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para todos los jugadores.");
-                } else {
-                    Player target = Bukkit.getPlayer(targetName);
-                    if (target == null) {
-                        // player.sendMessage(msg.getMessage("prefix") + "§cJugador no encontrado: " + targetName);
-                        return;
-                    }
-                    PkCinematics.getApi().getPlaybackManager().play(target, cin);
-                    // player.sendMessage(msg.getMessage("prefix") + "§aReproduciendo cinemática " + id + " para " + target.getName() + ".");
-                }
-            } else {
-                PkCinematics.getApi().getPlaybackManager().play(player, cin);
-                player.sendMessage(Messages.PLAYBACK_PLAYING.getWithPrefix());
-            }
-            return;
-        }
-
-        if (sub.equals("stop")) {
-            PkCinematics.getApi().getPlaybackManager().stop(player);
-            player.sendMessage(Messages.PLAYBACK_STOPPED.getWithPrefix());
-            return;
-        }
-        
-        if (sub.equals("reload")) {
-            if (args.length < 2) {
-                player.sendMessage(Messages.HELP_RELOAD.getWithPrefix());
-                return;
-            }
-            String target = args[1].toLowerCase();
-            
-            if (target.equals("cinematics") || target.equals("all")) {
-                for (Cinematic cin : PkCinematics.getApi().getCinematicManager().getAllCinematics()) {
-                    PkCinematics.getApi().getCinematicManager().unregisterCinematic(cin.getId());
-                }
-                for (Cinematic c : repository.loadAll()) {
-                    PkCinematics.getApi().getCinematicManager().registerCinematic(c);
-                }
-                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Cinemáticas"));
-            }
-            if (target.equals("triggers") || target.equals("all")) {
-                PkCinematics.getApi().getTriggerManager().loadAll();
-                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Triggers"));
-            }
-            if (target.equals("messages") || target.equals("all")) {
-                PkCinematics.getApi().getMessageManager().reload();
-                player.sendMessage(Messages.RELOADED.getWithPrefix("type", "Mensajes"));
-            }
-            return;
-        }
-
         if (sub.equals("debug")) {
             PlaybackManagerImpl pbManager = (PlaybackManagerImpl) PkCinematics.getApi().getPlaybackManager();
             pbManager.toggleDebug(player);
             if (pbManager.isDebugEnabled(player)) {
-                player.sendMessage(Messages.PREFIX.get() + "§aModo debug de cinemáticas ACTIVADO.");
+                player.sendMessage(Messages.PREFIX.get() + "§aCinematics debug mode ENABLED.");
             } else {
-                player.sendMessage(Messages.PREFIX.get() + "§cModo debug de cinemáticas DESACTIVADO.");
+                player.sendMessage(Messages.PREFIX.get() + "§cCinematics debug mode DISABLED.");
             }
             return;
         }
@@ -308,6 +343,12 @@ public class CinematicCommand implements BasicCommand {
                 }
             } else if (sub.equals("point")) {
                 if ("edit".startsWith(args[1].toLowerCase())) results.add("edit");
+            } else if (sub.equals("stop")) {
+                if ("todos".startsWith(args[1].toLowerCase())) results.add("todos");
+                if ("all".startsWith(args[1].toLowerCase())) results.add("all");
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p.getName().toLowerCase().startsWith(args[1].toLowerCase())) results.add(p.getName());
+                }
             }
             return results;
         }
