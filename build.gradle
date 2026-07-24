@@ -72,7 +72,7 @@ shadowJar {
 // ── Dev JAR: no PacketEvents inside — assumes it’s a plugin on the server ────
 tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     group = 'build'
-    description = 'Builds a -dev JAR without shading PacketEvents (server must have it as a plugin).'
+    description = 'Builds a JAR without shading PacketEvents (server must have it as a plugin).'
 
     from sourceSets.main.output
     configurations = [project.configurations.runtimeClasspath]
@@ -85,11 +85,12 @@ tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
 
     archiveBaseName.set(project.name)
     archiveVersion.set("${project.version}")
-    archiveClassifier.set('dev')
+    archiveClassifier.set('no-packetevents')
     destinationDirectory.set(layout.buildDirectory.dir('libs'))
 }
 
 tasks.build {
-    dependsOn shadowJar
+    dependsOn shadowJar, devJar
 }
+
 
