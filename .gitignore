@@ -1,5 +1,31 @@
+# ── Build ─────────────────────────────────
 .gradle/
 build/
+out/
+
+# ── IDE ───────────────────────────────────
 .idea/
 *.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*~
+
+# ── Gradle Wrapper (descargable) ──────────
+gradle/wrapper/gradle-wrapper.jar
+
+# ── Binarios / JARs ──────────────────────
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# ── Claude / AI Skills ───────────────────
+.claude/
+
+# ── OS ────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
