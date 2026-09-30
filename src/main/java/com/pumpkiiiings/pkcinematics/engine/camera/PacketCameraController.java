@@ -15,6 +15,7 @@ import com.pumpkiiiings.pkcinematics.api.camera.CameraController;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import org.bukkit.entity.Player;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,10 +45,14 @@ public class PacketCameraController implements CameraController {
         );
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, spawnPacket);
 
-        // Make the ArmorStand invisible so it doesn't show up in F5
+        // Make the ArmorStand invisible and a Marker (no hitbox, zero eye height)
+        // Index 0 = Entity base flags: 0x20 = Invisible
+        // Index 15 = ArmorStand flags: 0x10 = Marker (zero bounding box, zero eye height)
+        List<EntityData> metadata = new java.util.ArrayList<>();
+        metadata.add(new EntityData(0, EntityDataTypes.BYTE, (byte) 0x20));
+        metadata.add(new EntityData(15, EntityDataTypes.BYTE, (byte) 0x10));
         WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(
-                fakeEntityId,
-                Collections.singletonList(new EntityData(0, EntityDataTypes.BYTE, (byte) 0x20))
+                fakeEntityId, metadata
         );
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, metadataPacket);
 

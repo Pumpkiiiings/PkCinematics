@@ -24,8 +24,9 @@ public class CameraPacketListener extends PacketListenerAbstract {
         if (!(sender instanceof Player)) return;
         Player receiver = (Player) sender;
 
-        // --- Block server teleport jitter during cinematic ---
-        if (event.getPacketType() == PacketType.Play.Server.PLAYER_POSITION_AND_LOOK) {
+        // --- Block server teleport/rotation jitter during cinematic ---
+        if (event.getPacketType() == PacketType.Play.Server.PLAYER_POSITION_AND_LOOK
+                || event.getPacketType() == PacketType.Play.Server.PLAYER_ROTATION) {
             if (PkCinematics.getApi().getPlaybackManager().isPlaying(receiver)) {
                 event.setCancelled(true);
             }

@@ -6,16 +6,19 @@ import com.pumpkiiiings.pkcinematics.api.action.SimpleActionContext;
 import com.pumpkiiiings.pkcinematics.api.camera.CameraController;
 import com.pumpkiiiings.pkcinematics.engine.session.PlaybackSession;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import com.pumpkiiiings.pkcinematics.core.PlaybackManagerImpl;
-import java.util.Set;
 import org.bukkit.Bukkit;
 
 public class CinematicScheduler {
@@ -32,6 +35,12 @@ public class CinematicScheduler {
      * which is always available unlike getEntityUUID() in some PacketEvents builds.
      */
     private final Set<Integer> cinematicEntityIds = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Tracks chunk tickets added per session so they can be removed on cleanup.
+     * Key: sessionId, Value: set of "worldName:chunkX:chunkZ" strings.
+     */
+    private final ConcurrentHashMap<UUID, Set<String>> sessionChunkTickets = new ConcurrentHashMap<>();
 
     private final Plugin plugin;
 
@@ -50,6 +59,7 @@ public class CinematicScheduler {
 
     public void addSession(PlaybackSession session) {
         activeSessions.put(session.getSessionId(), session);
+        sessionChunkTickets.put(session.getSessionId(), ConcurrentHashMap.newKeySet());
         // Start spectating immediately at tick 0
         CameraKeyframe initialPoint = session.getCinematic().getTimeline().getCameraTrack().getInterpolatedPoint(0);
         if (initialPoint != null) {
@@ -70,6 +80,8 @@ public class CinematicScheduler {
             if (session.getScheduledTask() != null) {
                 session.getScheduledTask().cancel();
             }
+            // Remove all chunk tickets added during this session
+            removeChunkTickets(sessionId);
         }
     }
 
@@ -103,19 +115,20 @@ public class CinematicScheduler {
         if (currentPoint != null) {
             cameraController.updatePosition(session.getPlayer(), currentPoint);
             
-            // Force chunk loading by teleporting the physical body every 10 ticks (0.5s)
-            // The client won't jitter because CameraPacketListener blocks the position packet!
+            // Force chunk loading using chunk tickets instead of teleportAsync.
+            // teleportAsync in 1.21.2+/26.x causes teleport confirmation desync because
+            // CameraPacketListener cancels PLAYER_POSITION_AND_LOOK, preventing the client
+            // from sending TeleportConfirm — leading to rubberbanding or kicks.
             if (currentTick % 10 == 0) {
-                Location loc = new Location(
-                    Bukkit.getWorld(currentPoint.getWorldName()),
-                    currentPoint.getX(),
-                    currentPoint.getY(),
-                    currentPoint.getZ(),
-                    currentPoint.getYaw(),
-                    currentPoint.getPitch()
-                );
-                if (loc.getWorld() != null) {
-                    session.getPlayer().teleportAsync(loc);
+                World world = Bukkit.getWorld(currentPoint.getWorldName());
+                if (world != null) {
+                    int chunkX = (int) Math.floor(currentPoint.getX()) >> 4;
+                    int chunkZ = (int) Math.floor(currentPoint.getZ()) >> 4;
+                    String ticketKey = currentPoint.getWorldName() + ":" + chunkX + ":" + chunkZ;
+                    Set<String> tickets = sessionChunkTickets.get(session.getSessionId());
+                    if (tickets != null && tickets.add(ticketKey)) {
+                        world.addPluginChunkTicket(chunkX, chunkZ, plugin);
+                    }
                 }
             }
         }
@@ -135,6 +148,26 @@ public class CinematicScheduler {
             // Ideally we'd call PlaybackManager.stop() to handle state restoration properly.
             // For now, we'll just let the manager handle it or fire an event.
             PkCinematics.getApi().getPlaybackManager().stop(session.getPlayer());
+        }
+    }
+
+    /**
+     * Removes all plugin chunk tickets that were added during a session.
+     */
+    private void removeChunkTickets(UUID sessionId) {
+        Set<String> tickets = sessionChunkTickets.remove(sessionId);
+        if (tickets == null) return;
+        for (String ticketKey : tickets) {
+            String[] parts = ticketKey.split(":");
+            if (parts.length != 3) continue;
+            World world = Bukkit.getWorld(parts[0]);
+            if (world != null) {
+                try {
+                    int chunkX = Integer.parseInt(parts[1]);
+                    int chunkZ = Integer.parseInt(parts[2]);
+                    world.removePluginChunkTicket(chunkX, chunkZ, plugin);
+                } catch (NumberFormatException ignored) {}
+            }
         }
     }
 }
