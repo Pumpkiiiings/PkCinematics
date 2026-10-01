@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
+import com.pumpkiiiings.pkcinematics.gui.PkItem;
 import org.bukkit.Material;
 
 public class GuiConfigManager {
@@ -50,7 +50,7 @@ public class GuiConfigManager {
         return com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(raw);
     }
     
-    public ItemBuilder getItemBuilder(String path, String... placeholders) {
+    public PkItem getItemBuilder(String path, String... placeholders) {
         String materialName = config.getString(path + ".material", "STONE");
         Material material = Material.matchMaterial(materialName);
         if (material == null) material = Material.STONE;
@@ -62,7 +62,7 @@ public class GuiConfigManager {
         
         Component nameComp = com.pumpkiiiings.pkcinematics.core.FormatUtils.parse(name)
                 .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
-        ItemBuilder builder = ItemBuilder.from(material).name(nameComp);
+        PkItem builder = PkItem.of(material).name(nameComp);
         
         List<String> lore = config.getStringList(path + ".lore");
         List<Component> compLore = new ArrayList<>();
@@ -79,6 +79,6 @@ public class GuiConfigManager {
     }
 
     private String colorize(String str) {
-        return str.replace("&", "§"); // Only used for getString
+        return str.replace("&", "§");
     }
 }

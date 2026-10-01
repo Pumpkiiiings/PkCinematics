@@ -39,9 +39,6 @@ dependencies {
 
     // PacketEvents — shaded in the release jar, provided by the server in dev builds
     implementation 'com.github.retrooper:packetevents-spigot:2.14.0'
-    
-    // Triumph GUI
-    implementation 'dev.triumphteam:triumph-gui:3.1.13'
 
     // WorldGuard API
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9'
@@ -79,7 +76,6 @@ processResources {
 shadowJar {
     relocate 'com.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.packetevents'
     relocate 'io.github.retrooper.packetevents', 'com.pumpkiiiings.pkcinematics.libs.ioretrograder'
-    relocate 'dev.triumphteam.gui', 'com.pumpkiiiings.pkcinematics.libs.triumphgui'
     archiveClassifier.set('')
 }
 
@@ -94,8 +90,6 @@ tasks.register('devJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
     // Exclude PacketEvents entirely — provided by the server
     exclude 'com/github/retrooper/**'
     exclude 'io/github/retrooper/**'
-
-    relocate 'dev.triumphteam.gui', 'com.pumpkiiiings.pkcinematics.libs.triumphgui'
 
     archiveBaseName.set(project.name)
     archiveVersion.set("${project.version}")

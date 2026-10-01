@@ -5,10 +5,9 @@ import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.api.action.PkAction;
 import com.pumpkiiiings.pkcinematics.model.timeline.ActionTrack;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.PaginatedGui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.pumpkiiiings.pkcinematics.gui.PkItem;
+import com.pumpkiiiings.pkcinematics.gui.PkPaginatedMenu;
+import com.pumpkiiiings.pkcinematics.gui.PkGuiItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import java.util.List;
@@ -20,23 +19,21 @@ public class ActionsListGui {
         GuiConfigManager config = api.getGuiConfigManager();
         ActionTrack track = session.getCinematic().getTimeline().getActionTrack();
 
-        PaginatedGui gui = Gui.paginated()
+        PkPaginatedMenu gui = PkPaginatedMenu.paginated()
                 .title(config.getComponent("actions_list.title", "cinematic", session.getCinematic().getId()))
                 .rows(6)
                 .pageSize(45)
-                .disableAllInteractions()
                 .create();
 
-        // Populate Actions
         for (int tick : track.getAllActions().keySet()) {
             List<PkAction> actionsAtTick = track.getAllActions().get(tick);
             for (PkAction action : actionsAtTick) {
-                ItemBuilder itemBuilder = config.getItemBuilder("actions_list.item",
+                PkItem itemBuilder = config.getItemBuilder("actions_list.item",
                         "type", action.getType(),
                         "tick", String.valueOf(tick)
                 );
                 
-                GuiItem guiItem = itemBuilder.asGuiItem(event -> {
+                PkGuiItem guiItem = itemBuilder.asGuiItem(event -> {
                     if (event.getClick() == ClickType.RIGHT) {
                         com.pumpkiiiings.pkcinematics.api.action.ActionContext ctx = new com.pumpkiiiings.pkcinematics.api.action.ActionContext() {
                             @Override public Player getPlayer() { return player; }
@@ -48,7 +45,7 @@ public class ActionsListGui {
                     } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                         track.removeAction(tick, action);
                         session.getCinematic().getTimeline().calculateDuration();
-                        open(player, session); // Refresh
+                        open(player, session);
                     }
                 });
                 gui.addItem(guiItem);
@@ -61,7 +58,7 @@ public class ActionsListGui {
         gui.setItem(6, 5, config.getItemBuilder("nav.back").asGuiItem(e -> MainEditorGui.open(player, session)));
 
         // Add Action Button
-        GuiItem addBtn = config.getItemBuilder("actions_list.add_btn").asGuiItem(event -> {
+        PkGuiItem addBtn = config.getItemBuilder("actions_list.add_btn").asGuiItem(event -> {
             ActionSelectorGui.open(player, session);
         });
         gui.setItem(6, 9, addBtn);

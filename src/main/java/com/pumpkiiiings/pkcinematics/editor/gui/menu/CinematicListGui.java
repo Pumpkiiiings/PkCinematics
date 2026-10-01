@@ -3,10 +3,9 @@ package com.pumpkiiiings.pkcinematics.editor.gui.menu;
 import com.pumpkiiiings.pkcinematics.api.PkCinematics;
 import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.model.Cinematic;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.PaginatedGui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.pumpkiiiings.pkcinematics.gui.PkItem;
+import com.pumpkiiiings.pkcinematics.gui.PkPaginatedMenu;
+import com.pumpkiiiings.pkcinematics.gui.PkGuiItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import com.pumpkiiiings.pkcinematics.config.Messages;
@@ -17,11 +16,10 @@ public class CinematicListGui {
         PkCinematics api = PkCinematics.getApi();
         GuiConfigManager config = api.getGuiConfigManager();
 
-        PaginatedGui gui = Gui.paginated()
+        PkPaginatedMenu gui = PkPaginatedMenu.paginated()
                 .title(config.getComponent("cinematics_list.title"))
                 .rows(6)
                 .pageSize(45)
-                .disableAllInteractions()
                 .create();
 
         for (Cinematic cinematic : api.getCinematicManager().getAllCinematics()) {
@@ -29,14 +27,14 @@ public class CinematicListGui {
             int keys = cinematic.getTimeline().getCameraTrack().getKeyframes().size();
             int actions = cinematic.getTimeline().getActionTrack().getAllActions().size();
             
-            ItemBuilder itemBuilder = config.getItemBuilder("cinematics_list.item",
+            PkItem itemBuilder = config.getItemBuilder("cinematics_list.item",
                     "id", cinematic.getId(),
                     "duration", String.valueOf(duration),
                     "keyframes", String.valueOf(keys),
                     "actions", String.valueOf(actions)
             );
 
-            GuiItem guiItem = itemBuilder.asGuiItem(event -> {
+            PkGuiItem guiItem = itemBuilder.asGuiItem(event -> {
                 if (event.getClick() == ClickType.LEFT) {
                     api.getEditorManager().startEditing(player, cinematic);
                     MainEditorGui.open(player, api.getEditorManager().getSession(player));
@@ -50,7 +48,7 @@ public class CinematicListGui {
         gui.setItem(6, 7, config.getItemBuilder("nav.next").asGuiItem(e -> gui.next()));
         
         // Add create button
-        GuiItem createBtn = config.getItemBuilder("cinematics_list.create_btn").asGuiItem(e -> {
+        PkGuiItem createBtn = config.getItemBuilder("cinematics_list.create_btn").asGuiItem(e -> {
             String prompt = Messages.PREFIX.get() + "§aType the ID (name) for the new cinematic in chat:";
             api.getChatInputManager().requestInput(player, prompt, input -> {
                 String id = input.trim();

@@ -52,6 +52,7 @@ import com.pumpkiiiings.pkcinematics.integration.MythicMobsIntegration;
 
 import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.gui.ChatInputManager;
+import com.pumpkiiiings.pkcinematics.gui.PkMenuListener;
 
 public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
     
@@ -157,6 +158,7 @@ public class PkCinematicsPlugin extends JavaPlugin implements PkCinematics {
         this.chatInputManager = new ChatInputManager();
         
         getServer().getPluginManager().registerEvents(this.chatInputManager, this);
+        getServer().getPluginManager().registerEvents(new PkMenuListener(), this);
         getServer().getPluginManager().registerEvents(new TriggerListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSkipCinematicListener(), this);
         

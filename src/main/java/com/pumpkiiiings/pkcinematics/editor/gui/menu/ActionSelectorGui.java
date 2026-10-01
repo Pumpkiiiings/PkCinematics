@@ -8,8 +8,8 @@ import com.pumpkiiiings.pkcinematics.action.impl.MessageAction;
 import com.pumpkiiiings.pkcinematics.action.impl.SoundAction;
 import com.pumpkiiiings.pkcinematics.action.impl.ParticleAction;
 import com.pumpkiiiings.pkcinematics.action.impl.TimeAction;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.pumpkiiiings.pkcinematics.gui.PkMenu;
+import com.pumpkiiiings.pkcinematics.gui.PkGuiItem;
 import org.bukkit.entity.Player;
 import java.util.function.Consumer;
 import com.pumpkiiiings.pkcinematics.config.Messages;
@@ -20,14 +20,13 @@ public class ActionSelectorGui {
         PkCinematics api = PkCinematics.getApi();
         GuiConfigManager config = api.getGuiConfigManager();
 
-        Gui gui = Gui.gui()
+        PkMenu gui = PkMenu.gui()
                 .title(config.getComponent("action_selector.title"))
                 .rows(3)
-                .disableAllInteractions()
                 .create();
 
         // Title
-        GuiItem titleItem = config.getItemBuilder("action_selector.items.title").asGuiItem(event -> {
+        PkGuiItem titleItem = config.getItemBuilder("action_selector.items.title").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
                 api.getChatInputManager().requestInput(player, "§aType the title (or 'none' to leave empty):", titleInput -> {
                     api.getChatInputManager().requestInput(player, "§aType the subtitle (or 'none' to leave empty):", subtitleInput -> {
@@ -45,7 +44,7 @@ public class ActionSelectorGui {
         gui.setItem(2, 2, titleItem);
 
         // Message
-        GuiItem msgItem = config.getItemBuilder("action_selector.items.message").asGuiItem(event -> {
+        PkGuiItem msgItem = config.getItemBuilder("action_selector.items.message").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
                 api.getChatInputManager().requestInput(player, "§aType the message:", text -> {
                     MessageAction action = new MessageAction(text);
@@ -59,7 +58,7 @@ public class ActionSelectorGui {
         gui.setItem(2, 4, msgItem);
 
         // Sound
-        GuiItem soundItem = config.getItemBuilder("action_selector.items.sound").asGuiItem(event -> {
+        PkGuiItem soundItem = config.getItemBuilder("action_selector.items.sound").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
                 api.getChatInputManager().requestInput(player, "§aType the sound name (e.g., ENTITY_PLAYER_LEVELUP):", text -> {
                     SoundAction action = new SoundAction(text, 1.0f, 1.0f);
@@ -73,7 +72,7 @@ public class ActionSelectorGui {
         gui.setItem(2, 6, soundItem);
 
         // Particle
-        GuiItem particleItem = config.getItemBuilder("action_selector.items.particle").asGuiItem(event -> {
+        PkGuiItem particleItem = config.getItemBuilder("action_selector.items.particle").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
                 api.getChatInputManager().requestInput(player, "§aType the particle name (e.g., FLAME):", text -> {
                     ParticleAction action = new ParticleAction(text, 10, 1.0f, 1.0f, 1.0f, 0.1f);
@@ -87,7 +86,7 @@ public class ActionSelectorGui {
         gui.setItem(2, 8, particleItem);
 
         // Time
-        GuiItem timeItem = config.getItemBuilder("action_selector.items.time").asGuiItem(event -> {
+        PkGuiItem timeItem = config.getItemBuilder("action_selector.items.time").asGuiItem(event -> {
             askTickAndExecute(player, session, tick -> {
                 api.getChatInputManager().requestInput(player, "§aType the time (e.g., day, night, noon, midnight, or ticks like 6000):", text -> {
                     long t = 0;

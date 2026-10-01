@@ -5,10 +5,9 @@ import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraTrack;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.PaginatedGui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.pumpkiiiings.pkcinematics.gui.PkItem;
+import com.pumpkiiiings.pkcinematics.gui.PkPaginatedMenu;
+import com.pumpkiiiings.pkcinematics.gui.PkGuiItem;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -20,11 +19,10 @@ public class KeyframesListGui {
         GuiConfigManager config = api.getGuiConfigManager();
         CameraTrack track = session.getCinematic().getTimeline().getCameraTrack();
 
-        PaginatedGui gui = Gui.paginated()
+        PkPaginatedMenu gui = PkPaginatedMenu.paginated()
                 .title(config.getComponent("keyframes_list.title", "cinematic", session.getCinematic().getId()))
                 .rows(6)
                 .pageSize(45)
-                .disableAllInteractions()
                 .create();
 
         int index = 0;
@@ -39,7 +37,7 @@ public class KeyframesListGui {
                 }
             }
             
-            ItemBuilder itemBuilder = config.getItemBuilder("keyframes_list.item",
+            PkItem itemBuilder = config.getItemBuilder("keyframes_list.item",
                     "index", String.valueOf(index),
                     "tick", String.valueOf(kf.getTick()),
                     "fov", String.valueOf(kf.getFov()),
@@ -48,7 +46,7 @@ public class KeyframesListGui {
                     "waiting", String.valueOf(waiting)
             );
 
-            GuiItem guiItem = itemBuilder.asGuiItem(event -> {
+            PkGuiItem guiItem = itemBuilder.asGuiItem(event -> {
                 if (event.getClick() == ClickType.LEFT) {
                     KeyframeEditorGui.open(player, session, kf, currentIndex);
                 } else if (event.getClick() == ClickType.RIGHT) {
@@ -63,7 +61,7 @@ public class KeyframesListGui {
                 } else if (event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) {
                     track.removeKeyframe(kf);
                     session.getCinematic().getTimeline().calculateDuration();
-                    open(player, session); // Refresh
+                    open(player, session);
                 }
             });
             gui.addItem(guiItem);
@@ -76,7 +74,7 @@ public class KeyframesListGui {
         gui.setItem(6, 5, config.getItemBuilder("nav.back").asGuiItem(e -> MainEditorGui.open(player, session)));
 
         // Add Point Button
-        GuiItem addBtn = config.getItemBuilder("keyframes_list.add_point_btn").asGuiItem(event -> {
+        PkGuiItem addBtn = config.getItemBuilder("keyframes_list.add_point_btn").asGuiItem(event -> {
             player.performCommand("cinematic point");
             open(player, session);
         });

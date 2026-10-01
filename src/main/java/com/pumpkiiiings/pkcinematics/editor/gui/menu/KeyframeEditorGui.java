@@ -4,8 +4,8 @@ import com.pumpkiiiings.pkcinematics.api.PkCinematics;
 import com.pumpkiiiings.pkcinematics.config.GuiConfigManager;
 import com.pumpkiiiings.pkcinematics.editor.EditorSession;
 import com.pumpkiiiings.pkcinematics.model.timeline.CameraKeyframe;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.pumpkiiiings.pkcinematics.gui.PkMenu;
+import com.pumpkiiiings.pkcinematics.gui.PkGuiItem;
 import org.bukkit.entity.Player;
 import java.util.Comparator;
 import com.pumpkiiiings.pkcinematics.config.Messages;
@@ -19,14 +19,13 @@ public class KeyframeEditorGui {
         PkCinematics api = PkCinematics.getApi();
         GuiConfigManager config = api.getGuiConfigManager();
 
-        Gui gui = Gui.gui()
+        PkMenu gui = PkMenu.gui()
                 .title(config.getComponent("keyframe_edit.title", "index", String.valueOf(index)))
                 .rows(3)
-                .disableAllInteractions()
                 .create();
 
         // Time (Tick)
-        GuiItem timeItem = config.getItemBuilder("keyframe_edit.items.time", "value", String.valueOf(kf.getTick()))
+        PkGuiItem timeItem = config.getItemBuilder("keyframe_edit.items.time", "value", String.valueOf(kf.getTick()))
                 .asGuiItem(event -> {
                     api.getChatInputManager().requestInput(player, "§aType the new value for TICK (time):", input -> {
                         try {
@@ -44,7 +43,7 @@ public class KeyframeEditorGui {
         gui.setItem(1, 3, timeItem);
 
         // FOV
-        GuiItem fovItem = config.getItemBuilder("keyframe_edit.items.fov", "value", String.valueOf(kf.getFov()))
+        PkGuiItem fovItem = config.getItemBuilder("keyframe_edit.items.fov", "value", String.valueOf(kf.getFov()))
                 .asGuiItem(event -> {
                     api.getChatInputManager().requestInput(player, "§aType the new value for FOV (zoom):", input -> {
                         try {
@@ -60,7 +59,7 @@ public class KeyframeEditorGui {
         gui.setItem(1, 7, fovItem);
 
         // Waiting
-        GuiItem waitingItem = config.getItemBuilder("keyframe_edit.items.waiting", "value", "0")
+        PkGuiItem waitingItem = config.getItemBuilder("keyframe_edit.items.waiting", "value", "0")
                 .asGuiItem(event -> {
                     api.getChatInputManager().requestInput(player, "§aType the ticks you want to wait at this point:", input -> {
                         try {
@@ -69,13 +68,11 @@ public class KeyframeEditorGui {
                                 player.sendMessage(Messages.EDITOR_INVALID_WAIT_TICKS.getWithPrefix());
                                 return;
                             }
-                            // Shift all keyframes after this one
                             for (CameraKeyframe other : session.getCinematic().getTimeline().getCameraTrack().getKeyframes()) {
                                 if (other.getTick() > kf.getTick()) {
                                     other.setTick(other.getTick() + waitTicks);
                                 }
                             }
-                            // Shift all actions after this one
                             com.pumpkiiiings.pkcinematics.model.timeline.ActionTrack actionTrack = session.getCinematic().getTimeline().getActionTrack();
                             java.util.Map<Integer, java.util.List<com.pumpkiiiings.pkcinematics.api.action.PkAction>> oldActions = new java.util.HashMap<>(actionTrack.getAllActions());
                             actionTrack.getAllActions().clear();
@@ -85,8 +82,6 @@ public class KeyframeEditorGui {
                                     actionTrack.addAction(newActionTick, act);
                                 }
                             }
-                            
-                            // Insert clone
                             CameraKeyframe clone = new CameraKeyframe(
                                     kf.getTick() + waitTicks,
                                     kf.getWorldName(),
@@ -98,7 +93,6 @@ public class KeyframeEditorGui {
                             );
                             session.getCinematic().getTimeline().getCameraTrack().addKeyframe(clone);
                             session.getCinematic().getTimeline().calculateDuration();
-                            
                             player.sendMessage(Messages.EDITOR_WAIT_TIME_ADDED.getWithPrefix("ticks", String.valueOf(waitTicks)));
                             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.2f);
                         } catch (NumberFormatException e) {
@@ -111,7 +105,7 @@ public class KeyframeEditorGui {
 
         // Interpolation
         String curInterp = kf.getInterpolationType();
-        GuiItem interpItem = config.getItemBuilder("keyframe_edit.items.interp", 
+        PkGuiItem interpItem = config.getItemBuilder("keyframe_edit.items.interp", 
                 "value", curInterp,
                 "opt_linear", curInterp.equalsIgnoreCase("LINEAR") ? "§a▶ Linear" : "§7  Linear",
                 "opt_catmull_rom", curInterp.equalsIgnoreCase("CATMULL_ROM") ? "§a▶ Catmull_Rom" : "§7  Catmull_Rom"
@@ -123,13 +117,13 @@ public class KeyframeEditorGui {
                         if (INTERP_TYPES[j].equalsIgnoreCase(current)) i = j;
                     }
                     kf.setInterpolationType(INTERP_TYPES[(i + 1) % INTERP_TYPES.length]);
-                    open(player, session, kf, index); // Refresh
+                    open(player, session, kf, index);
                 });
         gui.setItem(2, 4, interpItem);
 
         // Easing
         String curEasing = kf.getEasingType();
-        GuiItem easingItem = config.getItemBuilder("keyframe_edit.items.easing", 
+        PkGuiItem easingItem = config.getItemBuilder("keyframe_edit.items.easing", 
                 "value", curEasing,
                 "opt_linear", curEasing.equalsIgnoreCase("LINEAR") ? "§a▶ Linear" : "§7  Linear",
                 "opt_ease_in", curEasing.equalsIgnoreCase("EASE_IN") ? "§a▶ Ease_In" : "§7  Ease_In",
@@ -143,7 +137,7 @@ public class KeyframeEditorGui {
                         if (EASING_TYPES[j].equalsIgnoreCase(current)) i = j;
                     }
                     kf.setEasingType(EASING_TYPES[(i + 1) % EASING_TYPES.length]);
-                    open(player, session, kf, index); // Refresh
+                    open(player, session, kf, index);
                 });
         gui.setItem(2, 6, easingItem);
 
